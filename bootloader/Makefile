@@ -1,13 +1,15 @@
 BUILD_DIR=../build/bootloader
 
-
-BOOTLOADER_SRCS :=$(wildcard *.asm)
-BOOTLOADER_OBJS :=$(patsubst %.asm, $(BUILD_DIR)/%.o, $(BOOTLOADER_SRCS))
+AS=nasm
+ASFLAGS=-f bin
+BOOTLOADER_SRCS != ls *.asm
+BOOTLOADER_OBJS = $(BOOTLOADER_SRCS:.asm=.o)
+.SUFFIXES: .o .asm
 
 all: $(BOOTLOADER_OBJS)
 
-$(BUILD_DIR)/%.o: %.asm
-	nasm -f bin $< -o $@
+.asm.o:
+	$(AS) $(ASFLAGS) $< -o $(BUILD_DIR)/$@
 
 clean:
 	rm $(BUILD_DIR)/*

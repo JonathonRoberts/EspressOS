@@ -1,13 +1,15 @@
 BUILD_DIR=../build/os
 
-
-OS_SRCS :=$(wildcard *.asm)
-OS_OBJS :=$(patsubst %.asm, $(BUILD_DIR)/%.o, $(OS_SRCS))
+AS=nasm
+ASFLAGS=-f bin
+OS_SRCS!=ls *.asm
+OS_OBJS=$(OS_SRCS:.asm=.o)
+.SUFFIXES: .o .asm
 
 all: $(OS_OBJS)
 
-$(BUILD_DIR)/%.o: %.asm
-	nasm -f bin $< -o $@
+.asm.o:
+	$(AS) $(ASFLAGS) $< -o $(BUILD_DIR)/$@
 
 clean:
 	rm $(BUILD_DIR)/*
