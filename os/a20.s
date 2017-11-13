@@ -13,11 +13,12 @@ is_A20_on:
 	mov [rdi],rdi     ;(if A20 line is cleared the two pointers would point to the address 0x012345 that would contain 0x112345 (rdi))
 	cmpsq             ;compare addresses to see if the're equivalent.
 	popaq
-	jne A20_on        ;if not equivalent: return
+	je done
+	call enable_A20
+done:
+	ret
 
 enable_A20:
-        cli
-
         call    a20wait
         mov     al,0xAD
         out     0x64,al
@@ -43,9 +44,9 @@ enable_A20:
         mov     al,0xAE
         out     0x64,al
 
-        call    a20wait
+        jmp    a20wait
         sti
-	jmp is_A20_on
+	ret
 
 a20wait:
         in      al,0x64
@@ -59,6 +60,3 @@ a20wait2:
         test    al,1
         jz      a20wait2
         ret
-
-A20_on:
-	ret

@@ -60,7 +60,8 @@ Print:
 	ret
 
 boot:
-	cli; disable interrupts
+	;Protected Mode
+	cli; Disable interrupts
 	cld; all that we need to init
 
 	;call ClrScr
@@ -92,6 +93,12 @@ boot:
 
 	mov ah, 0x02	; read sectors from disk
 	int 0x13	; call the BIOS routine
+
+	;protected mode
+	mov eax, cr0
+	or al, 1
+	;mov cr0, eax
+
 	jmp [500h + 18h]	; jump and execute the sector
 
 halt:
