@@ -3,7 +3,7 @@
 
 void PutChar(){
 	__asm__(
-		"mov %eax, 0x3"
+		"mov %rax, 0x3"
 	);
 }
 

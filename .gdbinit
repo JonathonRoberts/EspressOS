@@ -1,12 +1,16 @@
+symbol-file build/os/os
 target remote localhost:26000
 
 set disassembly-flavor intel
 
 layout asm
 layout reg
+layout split
 
 #For debugging bootloader code
-set architecture i8086
+# set architecture i8086
+# For debugging OS code
+set architecture i386:x86-64
 
 b *0x7c00
 
