@@ -8,7 +8,9 @@ CC=clang
 ASFLAGS=-f bin
 OS_SRCS!=ls *.c
 OS_OBJS=$(OS_SRCS:.c=.o)
-.SUFFIXES: .o .c
+S_SRCS!=ls *.s
+#S_OBJS=$(S_SRCS:.s=.o)
+.SUFFIXES: .o .c .s
 
 all: $(OS)
 
