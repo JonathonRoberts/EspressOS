@@ -10,6 +10,7 @@ void test64(){
 }
 
 int main(){
+	is_A20_on();
 	test64();
 	__asm__("hlt");
 	return 0;
