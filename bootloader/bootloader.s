@@ -67,6 +67,16 @@ boot:
 	;mov si, msg	; SI points to message
 	;call Print
 
+	; set video mode
+	mov ah, 0x00; teletype output
+	mov al, 0x03; vga 3
+	mov bh, 0 ; page number (0..7)
+	int 10h
+	;write test char
+	mov al, 0x00
+	mov bh, 0 ; page number (0..7)
+	int 10h
+
 	;; Load main.c
 	mov ax, 0x50
 
