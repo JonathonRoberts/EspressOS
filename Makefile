@@ -21,7 +21,7 @@ bootdisk: bootloader os
 qemu-gdb:
 	qemu-system-x86_64 -machine q35 -fda $(DISK_IMG) -gdb tcp::26000 -S
 qemu:
-	qemu-system-x64_64-machine q35 -fda $(DISK_IMG)
+	qemu-system-x86_64 -machine q35 -fda $(DISK_IMG)
 
 clean:
 	make -C bootloader clean

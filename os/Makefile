@@ -16,7 +16,6 @@ all: $(OS)
 	$(CC) $(CFLAGS) -c $< -o $(BUILD_DIR)/$@
 
 $(OS): $(OS_OBJS)
-	#ld -m elf_i386 -nmagic -Tos.lds $(BUILD_DIR)/$(OS_OBJS) -o $@
 	ld -m elf_x86_64_obsd -nmagic -Tos.lds $(BUILD_DIR)/$(OS_OBJS) -o $@
 clean:
 	rm $(BUILD_DIR)/*

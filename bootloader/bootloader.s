@@ -1,8 +1,6 @@
 ;---
-; bootloader.asm
-; A simple Bootloader
+; bootloader.s
 ;---
-;	org 0x7c00
 	bits 16
 	start: jmp boot
 
@@ -65,6 +63,11 @@ boot:
 	cli; disable interrupts
 	cld; all that we need to init
 
+	;call ClrScr
+	;mov si, msg	; SI points to message
+	;call Print
+
+	;; Load main.c
 	mov ax, 0x50
 
 	;; set the buffer
@@ -79,15 +82,10 @@ boot:
 
 	mov ah, 0x02	; read sectors from disk
 	int 0x13	; call the BIOS routine
-	jmp [500h + 18h]	; jmup and execute the sector
-;	call ClrScr
+	jmp [500h + 18h]	; jump and execute the sector
 
-;	mov si, msg	; SI points to message
-;	call Print
+halt:
 
-halt:	hlt		; halt
-
-	cld; all that we need to init
 	hlt; halt the system
 
 ; we have to be 512 bytes. Clear the rest of the bytes with 0

@@ -1,13 +1,13 @@
 BUILD_DIR=../build/bootloader
 
 AS=nasm
-BOOTLOADER_SRCS != ls *.asm
-BOOTLOADER_OBJS = $(BOOTLOADER_SRCS:.asm=.o)
-.SUFFIXES: .o .asm
+BOOTLOADER_SRCS != ls *.s
+BOOTLOADER_OBJS = $(BOOTLOADER_SRCS:.s=.o)
+.SUFFIXES: .o .s
 
 all: $(BOOTLOADER_OBJS)
 
-.asm.o:
+.s.o:
 #	$(AS) -f bin $< -o $(BUILD_DIR)/$@
 	$(AS) -f elf $< -F dwarf -g -o $(BUILD_DIR)/$@
 	ld -m elf_i386 -T bootloader.lds $(BUILD_DIR)/$@ -o $(BUILD_DIR)/$@.elf
