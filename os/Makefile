@@ -4,7 +4,7 @@ OS=$(BUILD_DIR)/os
 CFLAGS+=-ffreestanding -nostdlib -gdwarf-2 -m64 -ggdb3 -Wall -std=c99
 
 AS=nasm
-CC=gcc
+CC=clang
 ASFLAGS=-f bin
 OS_SRCS!=ls *.c
 OS_OBJS=$(OS_SRCS:.c=.o)
