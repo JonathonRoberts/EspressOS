@@ -16,6 +16,11 @@ is_A20_on:
 	je done
 	call enable_A20
 done:
+	;protected
+	;mov rax, cr0
+	;or al, 1
+	;mov cr0, rax
+
 	ret
 
 enable_A20:

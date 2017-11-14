@@ -59,10 +59,37 @@ Print:
 .done:
 	ret
 
+GDT:
+	.Null: equ $ - GDT
+	dw 0
+	dw 0
+	db 0
+	db 0
+	db 0
+	db 0
+
+	.Code: equ $ - GDT
+	dw 0
+	dw 0
+	db 0
+	db 10011000b
+	db 00100000b
+	db 0
+
+	.Data: equ $ - GDT
+	dw 0
+	dw 0
+	db 10000000b
+	db 0
+	db 0
+	db 0
+
+	.Pointer:
+	dw $ - GDT - 1
+	dq GDT
 boot:
 	;Protected Mode
-	cli; Disable interrupts
-	cld; all that we need to init
+	cld; Clear direction flag
 
 	;call ClrScr
 	;mov si, msg	; SI points to message
@@ -78,7 +105,10 @@ boot:
 	mov bh, 0 ; page number (0..7)
 	int 10h
 
+	;;---
 	;; Load main.c
+	;;--
+
 	mov ax, 0x50
 
 	;; set the buffer
@@ -95,9 +125,11 @@ boot:
 	int 0x13	; call the BIOS routine
 
 	;protected mode
-	mov eax, cr0
-	or al, 1
+	cli; Disable interrupts
+	;mov eax, cr0
+	;or al, 1
 	;mov cr0, eax
+	lgdt[GDT.Pointer]
 
 	jmp [500h + 18h]	; jump and execute the sector
 
