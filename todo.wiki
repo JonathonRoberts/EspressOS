@@ -6,5 +6,5 @@
 * [X] Load GDT
 * [X] Enable Long mode
 * [X] Print in Long mode
-* [ ] Print to serial port
 * [ ] Keyboard input
+* [ ] Print to serial port
