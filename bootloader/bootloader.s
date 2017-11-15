@@ -120,12 +120,12 @@ Paging:
 
 	; Turn Paging on
 	mov eax, cr4
-	or eax, 1 << 5
+	or eax, 1 << 5 ; PAE
 	mov cr4, eax
 
 	mov ecx, 0xc0000080
 	rdmsr
-	or eax, 1 << 8
+	or eax, 1 << 8 ; Enables Long Mode
 	wrmsr
 
 	ret
@@ -175,9 +175,27 @@ boot:
 	lgdt[GDT.Pointer]
 
 	mov eax, cr0
-	or eax, 1
-	or eax, 1 << 31
+	or eax, 1 ; Enable Protected Mode
+	or eax, 1 << 31 ; Enable Paging and use CR3 Register
 	mov cr0, eax
+
+	jmp GDT.Code:LongMode
+	[bits 64]
+	LongMode:
+
+	; Long Mode printing
+	VID_MEM equ 0xb8000
+	CUR equ 0xb8008
+	mov edi, VID_MEM
+	mov rax, 0x1f54
+	mov rax, 0x1f201f201f201f20
+	mov ecx, 501
+	rep stosq
+
+	mov rax, 0x1f741f731f651f54
+	mov[VID_MEM],rax
+	mov rax, 0x1f741f731f651f54
+	mov[CUR],rax
 
 
 	jmp [500h + 18h]	; jump and execute the sector

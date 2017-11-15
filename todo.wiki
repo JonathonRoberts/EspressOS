@@ -4,12 +4,7 @@
 * [X] Load main.c
 * [X] A20 handler
 * [X] Load GDT
-* [ ] Enable Long mode
-** [ ] Disable paging
-** [ ] Set the PAE enable bit in CR4
-** [ ] Load CR3 with the physical address of the PML4
-** [ ] Enable long mode by setting the EFER.LME flag in MSR 0xC0000080
-** [ ] Enable paging
-* [ ] Print in Long mode
+* [X] Enable Long mode
+* [X] Print in Long mode
 * [ ] Print to serial port
 * [ ] Keyboard input
