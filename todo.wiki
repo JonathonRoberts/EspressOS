@@ -3,7 +3,7 @@
 * [X] Print in Real mode
 * [X] Load main.c
 * [X] A20 handler
-* [ ] Load GDT
+* [X] Load GDT
 * [ ] Enable Long mode
 ** [ ] Disable paging
 ** [ ] Set the PAE enable bit in CR4

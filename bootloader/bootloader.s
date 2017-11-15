@@ -87,6 +87,49 @@ GDT:
 	.Pointer:
 	dw $ - GDT - 1
 	dq GDT
+
+Paging:
+	; zero 0x1000 - 0x1496
+	mov edi, 0x1000
+	mov cr3, edi
+	xor eax, eax
+	mov ecx, 4096
+	rep stosd
+	mov edi, 0x1000
+
+	;PML4T @ 0x1000
+	;PDPT  @ 0x2000
+	;PDT   @ 0x3000
+	;PT    @ 0x4000
+
+	mov dword [edi], 0x2003
+	add edi, 0x1000
+	mov dword [edi], 0x3003
+	add edi, 0x1000
+	mov dword [edi], 0x4003
+	add edi, 0x1000
+
+	mov dword ebx, 3 ;
+	mov ecx, 512 ; loop 512 times
+
+	.setEntry:
+		mov dword [edi], ebx
+		add ebx, 0x1000
+		add edi, 8
+	loop .setEntry
+
+	; Turn Paging on
+	mov eax, cr4
+	or eax, 1 << 5
+	mov cr4, eax
+
+	mov ecx, 0xc0000080
+	rdmsr
+	or eax, 1 << 8
+	wrmsr
+
+	ret
+
 boot:
 	;Protected Mode
 	cld; Clear direction flag
@@ -105,13 +148,8 @@ boot:
 	mov bh, 0 ; page number (0..7)
 	int 10h
 
-	;;---
-	;; Load main.c
-	;;--
-
-	mov ax, 0x50
-
 	;; set the buffer
+	mov ax, 0x50
 	mov es, ax
 	xor bx, bx
 
@@ -126,16 +164,27 @@ boot:
 
 	;protected mode
 	cli; Disable interrupts
-	;mov eax, cr0
-	;or al, 1
-	;mov cr0, eax
+
+	;A20 line
+	; Not very portable way to enable a20
+	mov	al, 2
+	out	0x92, al
+
+	call Paging
+
 	lgdt[GDT.Pointer]
+
+	mov eax, cr0
+	or eax, 1
+	or eax, 1 << 31
+	mov cr0, eax
+
 
 	jmp [500h + 18h]	; jump and execute the sector
 
 halt:
 
-	hlt; halt the system
+	hlt
 
 ; we have to be 512 bytes. Clear the rest of the bytes with 0
 

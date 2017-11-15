@@ -19,10 +19,9 @@ all: $(OS)
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $(BUILD_DIR)/$@
 	nasm -f elf64 print.s -o ../build/os/print.o
-	nasm -f elf64 a20.s -o ../build/os/a20.o
 
 
 $(OS): $(OS_OBJS)
-	ld -m elf_x86_64_obsd -nmagic -Tos.lds $(BUILD_DIR)/print.o $(BUILD_DIR)/a20.o  $(BUILD_DIR)/$(OS_OBJS) -o $@
+	ld -m elf_x86_64_obsd -nmagic -Tos.lds $(BUILD_DIR)/print.o $(BUILD_DIR)/$(OS_OBJS) -o $@
 clean:
 	rm $(BUILD_DIR)/*
