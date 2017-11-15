@@ -198,17 +198,10 @@ LongMode:
 
 	; Long Mode printing
 	VID_MEM equ 0xb8000
-	CUR equ 0xb8008
 	mov edi, VID_MEM
-	mov rax, 0x1f54
-	mov rax, 0x1f201f201f201f20
+	mov rax, 0x1f201f201f201f20 ;blue bg, space
 	mov ecx, 501
 	rep stosq
-
-	mov rax, 0x1f741f731f651f54
-	mov[VID_MEM],rax
-	mov rax, 0x1f741f731f651f54
-	mov[CUR],rax
 
 	jmp [500h + 18h]	; jump and execute the loaded sector
 
