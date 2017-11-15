@@ -52,41 +52,41 @@ Print:
 
 .loop:
 	lodsb		; AL <- [DS:SI] && SI++
-	or	al, al	; end of string?
+	or	al, al	; strings are 0 terminated
 	jz	.done
 	call PutChar;
 	jmp 	.loop
 .done:
 	ret
 
-GDT:
+GDT:	; 64 bit Global Descriptor Table
 	.Null: equ $ - GDT
-	dw 0
-	dw 0
-	db 0
-	db 0
-	db 0
-	db 0
+	dw 0 ; Limit (low)
+	dw 0 ; Base (low)
+	db 0 ; Base (middle)
+	db 0 ; Access
+	db 0 ; Granularity
+	db 0 ; Base (high)
 
 	.Code: equ $ - GDT
-	dw 0
-	dw 0
-	db 0
-	db 10011000b
-	db 00100000b
-	db 0
+	dw 0 ; Limit (low)
+	dw 0 ; Base (low)
+	db 0 ; Base (middle)
+	db 10011000b ; Access (exec/read)
+	db 00100000b ; Granularity
+	db 0 ; Base (high)
 
 	.Data: equ $ - GDT
-	dw 0
-	dw 0
-	db 10000000b
-	db 0
-	db 0
-	db 0
+	dw 0 ; Limit (low)
+	dw 0 ; Base (low)
+	db 10000000b ; base (middle)
+	db 0 ; Access
+	db 0 ; Granularity
+	db 0 ; Base (high)
 
 	.Pointer:
-	dw $ - GDT - 1
-	dq GDT
+	dw $ - GDT - 1 ; Limit
+	dd GDT ; Base
 
 Paging:
 	; zero 0x1000 - 0x1496
@@ -97,10 +97,10 @@ Paging:
 	rep stosd
 	mov edi, 0x1000
 
-	;PML4T @ 0x1000
-	;PDPT  @ 0x2000
-	;PDT   @ 0x3000
-	;PT    @ 0x4000
+	; PML4T @ 0x1000
+	; PDPT  @ 0x2000
+	; PDT   @ 0x3000
+	; PT    @ 0x4000
 
 	mov dword [edi], 0x2003
 	add edi, 0x1000
@@ -111,7 +111,6 @@ Paging:
 
 	mov dword ebx, 3 ;
 	mov ecx, 512 ; loop 512 times
-
 	.setEntry:
 		mov dword [edi], ebx
 		add ebx, 0x1000
@@ -148,6 +147,10 @@ boot:
 	mov bh, 0 ; page number (0..7)
 	int 10h
 
+	;;---
+	;; Read second sector
+	;;---
+
 	;; set the buffer
 	mov ax, 0x50
 	mov es, ax
@@ -162,11 +165,20 @@ boot:
 	mov ah, 0x02	; read sectors from disk
 	int 0x13	; call the BIOS routine
 
-	;protected mode
+	;;---
+	;; Long Mode
+	;;---
+
+	; Notify BIOS we are going into Long mode
+	mov ax, 0xEC00
+	mov bl, 2
+	int 15h
+
 	cli; Disable interrupts
 
-	;A20 line
+	; A20 line
 	; Not very portable way to enable a20
+	; Use a20.asm
 	mov	al, 2
 	out	0x92, al
 
@@ -181,7 +193,8 @@ boot:
 
 	jmp GDT.Code:LongMode
 	[bits 64]
-	LongMode:
+
+LongMode:
 
 	; Long Mode printing
 	VID_MEM equ 0xb8000
@@ -197,11 +210,10 @@ boot:
 	mov rax, 0x1f741f731f651f54
 	mov[CUR],rax
 
+	jmp [500h + 18h]	; jump and execute the loaded sector
 
-	jmp [500h + 18h]	; jump and execute the sector
 
 halt:
-
 	hlt
 
 ; we have to be 512 bytes. Clear the rest of the bytes with 0
