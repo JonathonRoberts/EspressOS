@@ -1,0 +1,38 @@
+ * [.] assert.h
+ * [ ] complex.h
+ * [ ] ctype.h
+ * [.] errno.h
+ * [.] fenv.h
+ * [ ] float.h
+ * [ ] inttypes.h
+ * [X] iso646.h
+ * [ ] libc.tar
+ * [ ] limits.h
+ * [ ] locale.h
+ * [ ] math.h
+ * [ ] setjmp.h
+ * [ ] signal.h
+ * [ ] stdalign.h
+ * [ ] stdarg.h
+ * [ ] stdatomic.h
+ * [X] stdbool.h
+ * [.] stddef.h
+ * [ ] stdint.h
+ * [ ] stdio.h
+ * [ ] stdlib.h
+ * [ ] stdnoreturn.h
+ * [ ] string.h
+ * [ ] tgmath.h
+ * [ ] threads.h
+ * [ ] time.h
+ * [ ] uchar.h
+ * [ ] wchar.h
+ * [ ] wctype.h
+
+Types to implement:
+
+* [ ] bool
+* [ ] fenv_t
+* [ ] fexcept_t
+* [ ] errno_t
+
