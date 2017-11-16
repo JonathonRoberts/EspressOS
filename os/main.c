@@ -8,13 +8,34 @@
 #define VIDEO_ROWS 25
 #define TAB_SPACE 8
 
+int cx = 0;
+int cy = 0;
+
+void outb(uint16_t port, uint8_t val){
+	__asm__ __volatile__("outb %0, %1"::"a"(val),"d"(port));
+}
+
 void test64(){
 	__asm__ __volatile__(
 		"mov %rax, 0x01"/* x64 test */
 	);
 }
+void disable_cursor() {
+	outb(0x3D4, 0x0A);
+	outb(0x3D5, 0x20);
+}
+
+void move_cursor(int x, int y)
+{
+	uint16_t pos = y * VIDEO_COLS + x;
+
+	outb(0x3D4, 0x0F);
+	outb(0x3D5, (uint8_t) (pos & 0xFF));
+	outb(0x3D4, 0x0E);
+	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+}
 void kprint( char colour, const char *string ){
-	volatile char *video = (volatile char*)VIDEO_MEM;
+	volatile char *video = (volatile char*)(VIDEO_MEM+(cy*VIDEO_COLS)*2);
 	int col = 0;
 	while(*string) {
 		switch(*string){
@@ -33,6 +54,7 @@ void kprint( char colour, const char *string ){
 				video+=(VIDEO_COLS-col)*2;
 				col = 0;
 				string++;
+				cy++;
 				break;
 			}
 			default:
@@ -41,12 +63,15 @@ void kprint( char colour, const char *string ){
 				col++;
 		}
 	}
+	cx = col;
+	move_cursor(cx,cy);
 }
 
 int main(){
-	kprint(2, "Hello World!\nNewlines implemented!\nAlso\ttabs\thave\tbeen\timplemented\nin\ta\tway\tthat\tthey\nline\tup!");
+	//disable_cursor();
+	kprint(2, "Hello World\n12345678\n");
+	kprint(2, "\ttabs\ntest\t9");
 	test64();
 	__asm__("hlt");
 	return 0;
 }
-
