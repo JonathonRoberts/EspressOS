@@ -9,5 +9,7 @@
 * [X] Print strings
 * [X] Keep track of working line
 * [X] Move cursor
+* [ ] 1mb+ memory address for kernel
 * [ ] Keyboard input
 * [ ] Print to serial port
+* [ ] LibC

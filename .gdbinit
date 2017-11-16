@@ -1,4 +1,4 @@
-symbol-file build/os/os
+symbol-file build/kernel/kernel
 target remote localhost:26000
 
 set disassembly-flavor intel
