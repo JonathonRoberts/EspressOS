@@ -2,7 +2,7 @@
 ; and enable if required
 global Test_A20
 
-Test_A20
+Test_A20:
         call is_A20_on
         cmp ax, 1
         je Enabled_A20
