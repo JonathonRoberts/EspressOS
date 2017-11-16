@@ -4,60 +4,59 @@
 	bits 16
 	start: jmp boot
 
+	%include "a20.asm"
 ;; constant and variable definitions
-msg db "Welcommen to mein operating system!", 0
-_CurX db 0
-_CurY db 0
+;_CurX db 0
+;_CurY db 0
+;
+;
+;MovCur:
+;	; dh = row
+;	; dl = col
+;	mov bh, 0 ; page number (0..7)
+;	mov ah, 2 ; ah = 2 - sets cursor position
+;	int 10h
+;	ret
 
+;ClrScr:
+;	mov dl, 0
+;	mov dh, 0
+;	call MovCur
+;	mov al, ' '
+;	mov bl, 0
+;	mov cx, 80*25
+;	call PutChar
+;	mov dl, 0
+;	mov dh, 0
+;	mov [_CurY], dh
+;	mov [_CurX], dl
+;	call MovCur
+;	ret
 
-MovCur:
-	; dh = row
-	; dl = col
-	mov bh, 0 ; page number (0..7)
-	mov ah, 2 ; ah = 2 - sets cursor position
-	int 10h
-	ret
+;PutChar:
+;	; print character
+;	mov ah, 0ah ; ah = 0ah - write character at cursor position
+;	int 10h
+;
+;	; Increment cursor position
+;	add [_CurX], cx
+;	mov dh, [_CurY]
+;	mov dl, [_CurX]
+;	call MovCur;
+;	ret
 
-ClrScr:
-	mov dl, 0
-	mov dh, 0
-	call MovCur
-	mov al, ' '
-	mov bl, 0
-	mov cx, 80*25
-	call PutChar
-	mov dl, 0
-	mov dh, 0
-	mov [_CurY], dh
-	mov [_CurX], dl
-	call MovCur
-	ret
-
-PutChar:
-	; print character
-	mov ah, 0ah ; ah = 0ah - write character at cursor position
-	int 10h
-
-	; Increment cursor position
-	add [_CurX], cx
-	mov dh, [_CurY]
-	mov dl, [_CurX]
-	call MovCur;
-	ret
-
-Print:
-	call MovCur
-	;mov ah, 0x0e	; print char service
-	mov cx, 1	; number of times to display each character
-
-.loop:
-	lodsb		; AL <- [DS:SI] && SI++
-	or	al, al	; strings are 0 terminated
-	jz	.done
-	call PutChar;
-	jmp 	.loop
-.done:
-	ret
+;Print:
+;	call MovCur
+;	mov cx, 1	; number of times to display each character
+;
+;.loop:
+;	lodsb		; AL <- [DS:SI] && SI++
+;	or	al, al	; strings are 0 terminated
+;	jz	.done
+;	call PutChar;
+;	jmp 	.loop
+;.done:
+;	ret
 
 GDT:	; 64 bit Global Descriptor Table
 	.Null: equ $ - GDT
@@ -130,7 +129,6 @@ Paging:
 	ret
 
 boot:
-	;Protected Mode
 	cld; Clear direction flag
 
 	;call ClrScr
@@ -140,10 +138,6 @@ boot:
 	; set video mode
 	mov ah, 0x00; teletype output
 	mov al, 0x03; vga 3
-	mov bh, 0 ; page number (0..7)
-	int 10h
-	;write test char
-	mov al, 0x00
 	mov bh, 0 ; page number (0..7)
 	int 10h
 
@@ -174,17 +168,13 @@ boot:
 	mov bl, 2
 	int 15h
 
+	call Test_A20 	; Test for and try to enable A20 line
+
 	cli; Disable interrupts
 
-	; A20 line
-	; Not very portable way to enable a20
-	; Use a20.asm
-	mov	al, 2
-	out	0x92, al
+	call Paging	; Load Page tables
 
-	call Paging
-
-	lgdt[GDT.Pointer]
+	lgdt[GDT.Pointer] ; Load GDT
 
 	mov eax, cr0
 	or eax, 1 ; Enable Protected Mode
@@ -192,24 +182,19 @@ boot:
 	mov cr0, eax
 
 	jmp GDT.Code:LongMode
-	[bits 64]
 
 LongMode:
+	[bits 64]
 
 	; Long Mode printing
-	VID_MEM equ 0xb8000
-	mov edi, VID_MEM
+	;VID_MEM equ 0xb8000
+	mov edi, 0xb8000
 	mov rax, 0x1f201f201f201f20 ;blue bg, space
 	mov ecx, 501
 	rep stosq
 
-	jmp [500h + 18h]	; jump and execute the loaded sector
+	jmp [500h + 18h]	; Jump to and execute the loaded sector
 
-
-halt:
-	hlt
-
-; we have to be 512 bytes. Clear the rest of the bytes with 0
-
-	times 510 - ($-$$) db 0
-	dw 0xAA55 ; Boot signiture
+;; Required to boot
+times 510 - ($-$$) db 0		; Fill rest of sector with 0's
+dw 0xAA55 			; Boot signiture
