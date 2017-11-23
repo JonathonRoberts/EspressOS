@@ -1,0 +1,4 @@
+global ISR
+
+ISR:
+	ret

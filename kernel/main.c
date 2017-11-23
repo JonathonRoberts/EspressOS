@@ -15,6 +15,14 @@ void outb(uint16_t port, uint8_t val)
 {
 	__asm__ __volatile__("outb %0, %1"::"a"(val),"d"(port));
 }
+static inline uint8_t inb(uint16_t port)
+{
+    uint8_t ret;
+    __asm__ __volatile__ ( "inb %1, %0"
+                   : "=a"(ret)
+                   : "Nd"(port) );
+    return ret;
+}
 
 void disable_cursor()
 {
@@ -32,6 +40,16 @@ void move_cursor(int x, int y)
 	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
+void kscrollup()
+{
+	volatile char *video1 = (volatile char*)VIDEO_MEM;
+	volatile char *video2 = (volatile char*)(VIDEO_MEM+VIDEO_COLS*2);
+	int i;
+	for(i=0; i<((VIDEO_COLS)*(VIDEO_ROWS-1))*2;i++)
+		*video1++ = *video2++;
+	move_cursor(cx, --cy);
+}
+
 void kputs( uint8_t colour, const char a )
 {
 	volatile char *video = (volatile char*)VIDEO_MEM+(cy*VIDEO_COLS +cx++)*2;
@@ -40,8 +58,8 @@ void kputs( uint8_t colour, const char a )
 	if(cx == VIDEO_COLS){
 		cx = 0;
 		cy++;
-		if(cy>VIDEO_ROWS){
-			/*movescreenupone()*/
+		if(cy==VIDEO_ROWS){
+			kscrollup();
 		}
 	}
 	move_cursor(cx, cy);
@@ -69,7 +87,11 @@ void kprint( uint8_t colour, const char *string )
 				video+=(VIDEO_COLS-col)*2;
 				col = 0;
 				string++;
-				cy++;
+				if(cy++==VIDEO_ROWS){
+					cy--;
+					kscrollup();
+
+				}
 				break;
 			}
 			default:
@@ -82,15 +104,6 @@ void kprint( uint8_t colour, const char *string )
 	move_cursor(cx,cy);
 }
 
-void kscrollup()
-{
-	volatile char *video1 = (volatile char*)VIDEO_MEM;
-	volatile char *video2 = (volatile char*)(VIDEO_MEM+VIDEO_COLS*2);
-	int i;
-	for(i=0; i<VIDEO_COLS*(VIDEO_ROWS-1);i++)
-		*video1++ = *video2++;
-	move_cursor(cx, --cy);
-}
 
 void kclearscreen()
 {
@@ -105,13 +118,34 @@ void kclearscreen()
 	cy = 0;
 }
 
+char getScancode() {
+    char c=0;
+    do {
+        if(inb(0x60)!=c) {
+            c=inb(0x60);
+            if(c>0)
+                return c;
+        }
+    } while(1);
+}
+
+char getchar() {
+	return getScancode();
+}
+
 int main(){
 	disable_cursor();
 	kclearscreen();
 	kprint(0x2, "Hello world!\n");
-	kscrollup();
 	kprint(0x2, "Hello world!\n");
-	kprint(0x2, "Hello world!");
+	kprint(0x2, "Implementing tabs\n1234567890\n\ttab\n123\ttab\n");
+	int i;
+	char c;
+	while(1){
+		c = getchar();
+		for(i=0;i<10000000;i++);
+		kputs(0x2,c);
+	}
 	kscrollup();
 	__asm__("hlt");
 	return 0;

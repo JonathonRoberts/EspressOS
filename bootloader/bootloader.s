@@ -143,7 +143,7 @@ boot:
 	int 10h
 
 	;;---
-	;; Read second sector
+	;; Read more sectors
 	;;---
 
 	; Start loading at data buffer es:bx = 0x500
@@ -151,7 +151,7 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 4	; Number of sectors to read
+	mov al, 5	; Number of sectors to read
 	mov ch, 0	; cylinder
 	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number
