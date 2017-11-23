@@ -3,7 +3,8 @@
 #include "../include/sys/io.h"
 #include "../include/sys/param.h"
 
-int main(){
+int main()
+{
 	disable_cursor();
 	kclearscreen();
 	kprint(0x2, "Hello world!\n");
