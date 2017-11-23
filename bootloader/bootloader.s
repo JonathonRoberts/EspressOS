@@ -150,8 +150,8 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 2	; read sector 2
-	mov ch, 0	; track 0
+	mov al, 3	; Number of sectors to read
+	mov ch, 0	; cylinder
 	mov cl, 2	; sector to read
 	mov dh, 0	; head number
 	mov dl, 0	; drive number
@@ -192,6 +192,7 @@ LongMode:
 	mov rax, 0x1f201f201f201f20 ;blue bg, space
 	mov ecx, 501
 	rep stosq
+	mov esp, 0x105000	; move stack pointer to 0x105000
 
 	jmp [500h + 18h]	; Jump to and execute the loaded sector
 

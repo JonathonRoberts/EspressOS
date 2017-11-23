@@ -8,8 +8,8 @@ CC=clang
 ASFLAGS=-f bin
 KERNEL_SRCS!=ls *.c
 KERNEL_OBJS=$(KERNEL_SRCS:.c=.o)
-S_SRCS!=ls *.s
-S_OBJS=$(S_SRCS:.s=.o)
+#S_SRCS!=ls *.s
+#S_OBJS=$(S_SRCS:.s=.o)
 .SUFFIXES: .o .c .s
 
 all: $(KERNEL)
