@@ -1,10 +1,11 @@
 ;---
 ; bootloader.s
 ;---
-	bits 16
+	[bits 16]
 	start: jmp boot
+	%include "a20.asm" ; loads but does not execute
 
-	%include "a20.asm"
+;; Useful functions for debugging
 ;; constant and variable definitions
 ;_CurX db 0
 ;_CurY db 0
@@ -17,7 +18,7 @@
 ;	mov ah, 2 ; ah = 2 - sets cursor position
 ;	int 10h
 ;	ret
-
+;
 ;ClrScr:
 ;	mov dl, 0
 ;	mov dh, 0
@@ -32,7 +33,7 @@
 ;	mov [_CurX], dl
 ;	call MovCur
 ;	ret
-
+;
 ;PutChar:
 ;	; print character
 ;	mov ah, 0ah ; ah = 0ah - write character at cursor position
@@ -44,7 +45,7 @@
 ;	mov dl, [_CurX]
 ;	call MovCur;
 ;	ret
-
+;
 ;Print:
 ;	call MovCur
 ;	mov cx, 1	; number of times to display each character
@@ -145,18 +146,18 @@ boot:
 	;; Read second sector
 	;;---
 
-	;; set the buffer
+	; Start loading at data buffer es:bx = 0x500
 	mov ax, 0x50
 	mov es, ax
 	xor bx, bx
 
-	mov al, 3	; Number of sectors to read
+	mov al, 4	; Number of sectors to read
 	mov ch, 0	; cylinder
-	mov cl, 2	; sector to read
+	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number
 	mov dl, 0	; drive number
 
-	mov ah, 0x02	; read sectors from disk
+	mov ah, 0x02	; read sectors from disk into memory
 	int 0x13	; call the BIOS routine
 
 	;;---
@@ -186,16 +187,18 @@ boot:
 LongMode:
 	[bits 64]
 
-	; Long Mode printing
-	;VID_MEM equ 0xb8000
-	mov edi, 0xb8000
-	mov rax, 0x1f201f201f201f20 ;blue bg, space
-	mov ecx, 501
-	rep stosq
-	mov esp, 0x105000	; move stack pointer to 0x105000
+	;; Long Mode printing
+	;;VID_MEM equ 0xb8000
+	;mov edi, 0xb8000
+	;mov rax, 0x1f201f201f201f20 ;blue bg, space
+	;mov ecx, 501
+	;rep stosq
+	;mov esp, 0x105000	; move stack pointer to 0x105000
 
 	jmp [500h + 18h]	; Jump to and execute the loaded sector
 
 ;; Required to boot
-times 510 - ($-$$) db 0		; Fill rest of sector with 0's
-dw 0xAA55 			; Boot signiture
+; Fill rest boot sector with 0's, required to boot from floppy
+times 510 - ($-$$) db 0
+; Boot signature the bios looks for
+dw 0xAA55

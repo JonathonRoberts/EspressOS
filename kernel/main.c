@@ -1,13 +1,13 @@
 #include <stddef.h>
 #include <stdint.h>
-/* implement this */
-//#include <amd64/i8259.h>
 
 #define VIDEO_MEM 0xB8000
 #define VIDEO_COLS 80
 #define VIDEO_ROWS 25
 #define TAB_SPACE 8
 
+/* Global Vars */
+/* Cursor position */
 int cx = 0;
 int cy = 0;
 
@@ -16,12 +16,6 @@ void outb(uint16_t port, uint8_t val)
 	__asm__ __volatile__("outb %0, %1"::"a"(val),"d"(port));
 }
 
-//void test64()
-//{
-//	__asm__ __volatile__(
-//		"mov %rax, 0x01"/* x64 test */
-//	);
-//}
 void disable_cursor()
 {
 	outb(0x3D4, 0x0A);
@@ -38,20 +32,21 @@ void move_cursor(int x, int y)
 	outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
 }
 
-//void kputs( uint8_t colour, const char a )
-//{
-//	volatile char *video = (volatile char*)(VIDEO_MEM+(cy*VIDEO_COLS +cx++)*2);
-//	*video++ = a;
-//	*video++ = colour;
-//	if(cx == VIDEO_COLS){
-//		cx = 0;
-//		cy++;
-//		if(cy>VIDEO_ROWS){
-//			/*movescreenupone()*/
-//		}
-//	}
-//	move_cursor(cx, cy);
-//}
+void kputs( uint8_t colour, const char a )
+{
+	volatile char *video = (volatile char*)VIDEO_MEM+(cy*VIDEO_COLS +cx++)*2;
+	*video++ = a;
+	*video++ = colour;
+	if(cx == VIDEO_COLS){
+		cx = 0;
+		cy++;
+		if(cy>VIDEO_ROWS){
+			/*movescreenupone()*/
+		}
+	}
+	move_cursor(cx, cy);
+}
+
 
 void kprint( uint8_t colour, const char *string )
 {
@@ -87,13 +82,37 @@ void kprint( uint8_t colour, const char *string )
 	move_cursor(cx,cy);
 }
 
+void kscrollup()
+{
+	volatile char *video1 = (volatile char*)VIDEO_MEM;
+	volatile char *video2 = (volatile char*)(VIDEO_MEM+VIDEO_COLS*2);
+	int i;
+	for(i=0; i<VIDEO_COLS*(VIDEO_ROWS-1);i++)
+		*video1++ = *video2++;
+	move_cursor(cx, --cy);
+}
+
+void kclearscreen()
+{
+	move_cursor(0,0);
+	cx = 0;
+	cy = 0;
+	int i;
+	for(i=0;i<2000;i++)
+		kputs(0x12,' ');
+	move_cursor(0,0);
+	cx = 0;
+	cy = 0;
+}
+
 int main(){
-	//kputs(2,'a');
 	disable_cursor();
-	kprint(2, "ao\ttabs\ntest\t9");
-	kprint(2, "\ttabsaoe\ntest\t9");
-	kprint(2, "\ttabsaoe\ntest\t9");
-	kprint(2, "\ttabsaoe\ntest\t9");
+	kclearscreen();
+	kprint(0x2, "Hello world!\n");
+	kscrollup();
+	kprint(0x2, "Hello world!\n");
+	kprint(0x2, "Hello world!");
+	kscrollup();
 	__asm__("hlt");
 	return 0;
 }
