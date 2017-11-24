@@ -35,7 +35,6 @@
 #define VIDEO_ROWS 25
 #define TAB_SPACE 8
 
-
 #define PIC1            0x20            /* IO base address for master PIC */
 #define PIC2            0xA0            /* IO base address for slave PIC */
 #define PIC1_COMMAND    PIC1
@@ -55,6 +54,94 @@
 #define ICW4_BUF_SLAVE  0x08            /* Buffered mode/slave */
 #define ICW4_BUF_MASTER 0x0C            /* Buffered mode/master */
 #define ICW4_SFNM       0x10            /* Special fully nested (not) */
+
+char qwertyscancode[128] =
+{
+    0, 27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
+ '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
+    0,							/* Control */
+ 'a','s','d','f','g','h','j','k','l',';',
+ '\'', '`', 0,						/* Leftshift */
+ '\\','z','x','c','v','b','n','m',',','.','/', 0,	/*Rightshift*/
+	'*',
+	0,	/* Alt */
+	' ',	/* Space bar */
+	0,	/* Caps lock */
+	0,	/* F1 */
+	0,	/* F2 */
+	0,	/* F3 */
+	0,	/* F4 */
+	0,	/* F5 */
+	0,	/* F6 */
+	0,	/* F7 */
+	0,	/* F8 */
+	0,	/* F9 */
+	0,	/* F10 */
+	0,	/* Num lock*/
+	0,	/* Scroll Lock */
+	0,	/* Home key */
+	0,	/* Up Arrow */
+	0,	/* Page Up */
+	'-',
+	0,	/* Left Arrow */
+	0,
+	0,	/* Right Arrow */
+	'+',
+	0,	/* End */
+	0,	/* Down Arrow */
+	0,	/* Page Down */
+	0,	/* Insert */
+	0,	/* Delete */
+	0,   0,   0,
+	0,	/* F11 */
+	0,	/* F12 */
+	0,	/* undefined */
+};
+
+char dvorakscancode[128] =
+{
+    0, 27, '1','2','3','4','5','6','7','8','9','0','[',']','\b',
+ '\t','\'',',','.','p','y','f','g','c','r','l','/','=','\n',
+    0,							/* Control */
+ 'a','o','e','u','i','d','h','t','n','s',
+ '-', '`', 0,						/* Leftshift */
+ '\\',';','q','j','k','x','b','m','w','v','z', 0,	/*Rightshift*/
+	'*',
+	0,	/* Alt */
+	' ',	/* Space bar */
+	0,	/* Caps lock */
+	0,	/* F1 */
+	0,	/* F2 */
+	0,	/* F3 */
+	0,	/* F4 */
+	0,	/* F5 */
+	0,	/* F6 */
+	0,	/* F7 */
+	0,	/* F8 */
+	0,	/* F9 */
+	0,	/* F10 */
+	0,	/* Num lock*/
+	0,	/* Scroll Lock */
+	0,	/* Home key */
+	0,	/* Up Arrow */
+	0,	/* Page Up */
+	'-',
+	0,	/* Left Arrow */
+	0,
+	0,	/* Right Arrow */
+	'+',
+	0,	/* End */
+	0,	/* Down Arrow */
+	0,	/* Page Down */
+	0,	/* Insert */
+	0,	/* Delete */
+	0,   0,   0,
+	0,	/* F11 */
+	0,	/* F12 */
+	0,	/* undefined */
+};
+char *scancode = dvorakscancode;
+
 
 
 static int cx = 0;

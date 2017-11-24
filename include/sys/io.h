@@ -78,8 +78,25 @@ void kscrollup()
 void kputs( uint8_t colour, const char a )
 {
         volatile char *video = (volatile char*)VIDEO_MEM+(cy*VIDEO_COLS +cx++)*2;
-        *video++ = a;
-        *video++ = colour;
+	if(a == '\n'){
+		cx=VIDEO_COLS;
+	}
+	else if(a == '\t'){
+		if(cx<VIDEO_COLS-TAB_SPACE){
+			do {
+				*video++;
+				*video++ = colour;
+			}while(cx++%TAB_SPACE);
+			cx--;
+		}
+		else{
+			cx=VIDEO_COLS;
+		}
+	}
+	else{
+		*video++ = a;
+		*video++ = colour;
+	}
         if(cx == VIDEO_COLS){
                 cx = 0;
                 cy++;
@@ -144,7 +161,7 @@ void ksleep(int ticks){
                 ticks--;
         }
 }
-char getScancode() {
+uint8_t getScancode() {
     char c=0;
     do {
         if(inb(0x60)!=c) {
@@ -156,8 +173,8 @@ char getScancode() {
 }
 
 char getchar() {
-        char c =  getScancode();
-        ksleep(1000000);
+        char c =  scancode[getScancode()];
+        ksleep(800000); /*Terrible way to delay input*/
         return c;
 }
 #endif
