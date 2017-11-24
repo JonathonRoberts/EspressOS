@@ -11,6 +11,9 @@
 * [X] Move cursor
 * [X] Keyboard input
 * [ ] Write interrupt routines
+** [*] Create and load IDT
+** [ ] Remap PIC
+** [ ] Turn interrupts on with sti
 * [ ] Filesystem
 * [ ] Print to serial port
 * [ ] LibC
