@@ -9,8 +9,8 @@ C_SRCS!=ls *.c
 C_OBJS=$(C_SRCS:.c=.o)
 S_SRCS!=ls *.s
 S_OBJS=$(S_SRCS:.s=.o)
-KERNEL_OBJS=$(C_OBJS)
-KERNEL_OBJS+=$(S_OBJS)
+KERNEL_OBJS=$(S_OBJS)
+KERNEL_OBJS+=$(C_OBJS)
 .SUFFIXES: .o .c .s
 
 all: $(KERNEL)
