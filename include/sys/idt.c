@@ -62,7 +62,8 @@ void init_apic()
 }
 
 /* 64 bit IDT structure */
-struct IDTDescr {
+struct IDTDescr
+{
 	/* base address = offset_3::offset_2::offset_1 */
 	uint16_t offset_1; /* offset bits 0..15 */
 	uint16_t selector; /* a code segment selector in GDT or LDT */
@@ -72,6 +73,15 @@ struct IDTDescr {
 	uint32_t offset_3; /* offset bits 32..63 */
 	uint32_t zero;     /* reserved */
 }__attribute__((packed));
+
+
+/* 64 bit IDT pointer */
+struct IDTPointer
+{
+	/* lidt instruction takes this as an argument */
+	uint16_t DTLimit;
+	uint64_t *BaseAddress;
+};
 
 
 struct IDTDescr IDT[256];
@@ -95,26 +105,31 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 //}
 
 extern void isr0();
+extern void loadidt(struct IDTPointer idtp);
 void init_IDT()
 {
-	//PIC_remap(0x20, 0x28);
+	PIC_remap(0x20, 0x28);
 
 	/* Create IDT */
+	struct IDTPointer IDTP;
+	IDTP.BaseAddress = (uint64_t*)&IDT[0];
+	IDTP.DTLimit = 255;
+
 	int i;
 	for(i=0;i<256;i++)
-		setIDT(i,0,0,0,0);
-	setIDT(i,(uint64_t)&isr0,0x8,0x8e,128+15);
+		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+		//setIDT(i,(uint64_t)&isr0,0x8,0x8e,15);
+		//setIDT(i,0,0,0,0);
 
       	/* Load IDT */
-	struct IDTDescr *idtp;
-	idtp = &IDT[0];
 
-	__asm__ __volatile__("lidt %0" :: "m"(*idtp));
+	loadidt(IDTP);
+	//__asm__ __volatile__("lidt %0" :: "m"(IDTP));
 
 	/* Test IDT */
-	outb(0x21,0xfd);
+	outb(0x21,0xfd);/* Only allow keyboard interrupts */
 	outb(0xa1,0xff);
-	__asm__("sti");
+	//__asm__("sti");
 	//__asm__("int $1");
 	//__asm__("cli");
 	/*int a, b;
