@@ -151,7 +151,7 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 9	; Number of sectors to read
+	mov al, 10 	; Number of sectors to read
 	mov ch, 0	; cylinder
 	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number

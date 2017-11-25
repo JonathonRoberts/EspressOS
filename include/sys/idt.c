@@ -6,6 +6,55 @@ void disable_8259PIC()
 			"out %al, $0x21"
 			);
 }
+/* reinitialize the PIC controllers, giving them specified vector offsets
+   rather than 8h and 70h, as configured by default */
+
+#define ICW1_ICW4	0x01		/* ICW4 (not) needed */
+#define ICW1_SINGLE	0x02		/* Single (cascade) mode */
+#define ICW1_INTERVAL4	0x04		/* Call address interval 4 (8) */
+#define ICW1_LEVEL	0x08		/* Level triggered (edge) mode */
+#define ICW1_INIT	0x10		/* Initialization - required! */
+
+#define ICW4_8086	0x01		/* 8086/88 (MCS-80/85) mode */
+#define ICW4_AUTO	0x02		/* Auto (normal) EOI */
+#define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
+#define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
+#define ICW4_SFNM	0x10		/* Special fully nested (not) */
+
+/*
+arguments:
+	offset1 - vector offset for master PIC
+		vectors on the master become offset1..offset1+7
+	offset2 - same for slave PIC: offset2..offset2+7
+*/
+void PIC_remap(int offset1, int offset2)
+{
+	unsigned char a1, a2;
+
+	a1 = inb(PIC1_DATA);                        // save masks
+	a2 = inb(PIC2_DATA);
+
+	outb(PIC1_COMMAND, ICW1_INIT+ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+	io_wait();
+	outb(PIC2_COMMAND, ICW1_INIT+ICW1_ICW4);
+	io_wait();
+	outb(PIC1_DATA, offset1);                 // ICW2: Master PIC vector offset
+	io_wait();
+	outb(PIC2_DATA, offset2);                 // ICW2: Slave PIC vector offset
+	io_wait();
+	outb(PIC1_DATA, 4);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	io_wait();
+	outb(PIC2_DATA, 2);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
+	io_wait();
+
+	outb(PIC1_DATA, ICW4_8086);
+	io_wait();
+	outb(PIC2_DATA, ICW4_8086);
+	io_wait();
+
+	outb(PIC1_DATA, a1);   // restore saved masks.
+	outb(PIC2_DATA, a2);
+}
 
 void init_apic()
 {
@@ -22,7 +71,8 @@ struct IDTDescr {
 	uint16_t offset_2; /* offset bits 16..31 */
 	uint32_t offset_3; /* offset bits 32..63 */
 	uint32_t zero;     /* reserved */
-} __attribute__((packed));
+}__attribute__((packed));
+
 
 struct IDTDescr IDT[256];
 void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint8_t type_attr)
@@ -39,28 +89,34 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 	IDT[i].zero = 0;
 }
 
-void isr0(){
-	__asm__ __volatile__("hlt");
-	//__asm__ __volatile__("iret");
-}
+//void isr0(){
+//	//__asm__ __volatile__("hlt");
+//	//__asm__ __volatile__("iret");
+//}
 
+extern void isr0();
 void init_IDT()
 {
+	//PIC_remap(0x20, 0x28);
 
 	/* Create IDT */
 	int i;
 	for(i=0;i<256;i++)
-		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+		setIDT(i,0,0,0,0);
+	setIDT(i,(uint64_t)&isr0,0x8,0x8e,128+15);
 
-	/* Load IDT */
+      	/* Load IDT */
 	struct IDTDescr *idtp;
 	idtp = &IDT[0];
+
 	__asm__ __volatile__("lidt %0" :: "m"(*idtp));
 
 	/* Test IDT */
 	outb(0x21,0xfd);
 	outb(0xa1,0xff);
 	__asm__("sti");
+	//__asm__("int $1");
+	//__asm__("cli");
 	/*int a, b;
 	a = 1;
 	b = 0;
