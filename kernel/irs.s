@@ -1,23 +1,9 @@
 global isr0
-global loadidt
-
-loadidt:
-	lidt [rax]
-	sti
-	ret
 
 isr0:
-	cli
-	PUSH_ALL
-	POP_ALL
-	add rsp, 8
+	push rax
+	in al, 0x20
+	mov ax, 0x20
+	out 0x20, ax
 	pop rax
-	pop rax
-	pop rax
-	pop rax
-	pop rax
-	pop rax
-	pop rax
-	pop rax
-	sti
 	iretq

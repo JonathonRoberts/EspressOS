@@ -115,19 +115,15 @@ void init_IDT()
 
 	/* Create IDT */
 	struct IDTPointer IDTP;
-	IDTP.DTLimit = (60 * 16) -1;
+	IDTP.DTLimit = (255 * 16) -1;
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
 	int i;
-	for(i=0;i<60;i++){
-		//setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
-		setIDT(i,0,0,0,0);
+	for(i=0;i<255;i++){
+		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 		//memset(&IDT[i],0,15);
 	}
-//	__asm__ __volatile("lidtq (%0)"::"m"(&IDTP));
 	outb(0x21,0xfd);/* Only allow keyboard interrupts */
 	outb(0xa1,0xff);
-	loadidt((uint64_t)&IDTP);
-	//__asm__ __volatile("lidtq (%0)"::"m"(idtp));
+	__asm__ __volatile__("lidtq (%0);sti"::"r"(&IDTP));
 }
-
