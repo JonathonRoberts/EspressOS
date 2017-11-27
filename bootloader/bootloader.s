@@ -61,28 +61,28 @@
 
 GDT:	; 64 bit Global Descriptor Table
 	.Null: equ $ - GDT
-	dw 0 ; Limit (low)
-	dw 0 ; Base (low)
-	db 0 ; Base (middle)
-	db 0 ; Access
-	db 0 ; Granularity
-	db 0 ; Base (high)
+	dw 0
+	dw 0
+	db 0
+	db 0
+	db 0
+	db 0
 
 	.Code: equ $ - GDT
-	dw 0 ; Limit (low)
-	dw 0 ; Base (low)
-	db 0 ; Base (middle)
-	db 10011000b ; Access (exec/read)
+	dw 0 ; Segment limit (low)
+	dw 0 ; Base address (low)
+	db 0 ; Base address (middle)
+	db 10011000b ; 1 Present bit, 2&3 ring level, 4&5=1, 6 conform, 7 readable, 8 cpu access bit
 	db 00100000b ; Granularity
-	db 0 ; Base (high)
+	db 0 ; Base address (high)
 
 	.Data: equ $ - GDT
-	dw 0 ; Limit (low)
-	dw 0 ; Base (low)
-	db 10000000b ; base (middle)
-	db 0 ; Access
+	dw 0 ; Segment limit (low)
+	dw 0 ; Base address (low)
+	db 10000000b ; Base address (middle)
+	db 10010000b ; 1 Present bit, 2&3 ring level, 4=1, 5=0, 6 extend down, 7 writeable, 8 cpu access bit
 	db 0 ; Granularity
-	db 0 ; Base (high)
+	db 0 ; Base address (high)
 
 	.Pointer:
 	dw $ - GDT - 1 ; Limit

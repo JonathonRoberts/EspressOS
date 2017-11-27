@@ -81,15 +81,15 @@ struct IDTPointer
 	/* lidt instruction takes this as an argument */
 	uint16_t DTLimit;
 	uint64_t *BaseAddress;
-};
+}__attribute__((packed));
 
 
 struct IDTDescr IDT[256];
 void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint8_t type_attr)
 {
-	uint16_t offset1 = (functionPtr & 0x000000ffUL);
-	uint16_t offset2 = (functionPtr & 0x0000ff00UL) >> 16;
-	uint32_t offset3 = (functionPtr & 0xffff0000UL) >> 32;
+	uint16_t offset1 = (uint16_t)(functionPtr & 0xffff);
+	uint16_t offset2 = (uint16_t)(functionPtr >> 16) & 0xffff;
+	uint32_t offset3 = (uint32_t)(functionPtr >> 32) & 0xffffffff;
 	IDT[i].offset_1 = offset1;
 	IDT[i].selector = selector;
 	IDT[i].ist = ist;
@@ -99,43 +99,35 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 	IDT[i].zero = 0;
 }
 
-//void isr0(){
-//	//__asm__ __volatile__("hlt");
-//	//__asm__ __volatile__("iret");
-//}
+void* memset(void* bufptr, int value, size_t size) {
+	unsigned char* buf = (unsigned char*) bufptr;
+	for (size_t i = 0; i < size; i++)
+		buf[i] = (unsigned char) value;
+	return bufptr;
+}
+#define memset(b,c,n)	__builtin_memset((b),(c),(n))
 
 extern void isr0();
-extern void loadidt(struct IDTPointer idtp);
+extern void loadidt(uint64_t rax);
 void init_IDT()
 {
 	PIC_remap(0x20, 0x28);
 
 	/* Create IDT */
 	struct IDTPointer IDTP;
-	IDTP.BaseAddress = (uint64_t*)&IDT[0];
-	IDTP.DTLimit = 255;
+	IDTP.DTLimit = (60 * 16) -1;
+	IDTP.BaseAddress = (uint64_t*)&IDT;
 
 	int i;
-	for(i=0;i<256;i++)
-		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
-		//setIDT(i,(uint64_t)&isr0,0x8,0x8e,15);
-		//setIDT(i,0,0,0,0);
-
-      	/* Load IDT */
-
-	loadidt(IDTP);
-	//__asm__ __volatile__("lidt %0" :: "m"(IDTP));
-
-	/* Test IDT */
+	for(i=0;i<60;i++){
+		//setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+		setIDT(i,0,0,0,0);
+		//memset(&IDT[i],0,15);
+	}
+//	__asm__ __volatile("lidtq (%0)"::"m"(&IDTP));
 	outb(0x21,0xfd);/* Only allow keyboard interrupts */
 	outb(0xa1,0xff);
-	//__asm__("sti");
-	//__asm__("int $1");
-	//__asm__("cli");
-	/*int a, b;
-	a = 1;
-	b = 0;
-	a /=b;
-	*/
+	loadidt((uint64_t)&IDTP);
+	//__asm__ __volatile("lidtq (%0)"::"m"(idtp));
 }
 
