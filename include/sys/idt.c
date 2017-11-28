@@ -109,6 +109,7 @@ void* memset(void* bufptr, int value, size_t size) {
 
 extern void isr0();
 extern void loadidt(uint64_t rax);
+extern void sponge();
 void init_IDT()
 {
 	PIC_remap(0x20, 0x28);
@@ -120,10 +121,10 @@ void init_IDT()
 
 	int i;
 	for(i=0;i<255;i++){
-		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+		setIDT(i,(uint64_t)&isr0,0x8,0x8e,128+15);
 		//memset(&IDT[i],0,15);
 	}
-	outb(0x21,0xfd);/* Only allow keyboard interrupts */
-	outb(0xa1,0xff);
+//	outb(0x21,0xfd);/* Only allow keyboard interrupts */
+//	outb(0xa1,0xff);
 	__asm__ __volatile__("lidtq (%0);sti"::"r"(&IDTP));
 }
