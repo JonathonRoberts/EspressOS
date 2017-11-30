@@ -6,7 +6,7 @@
 #include "../include/sys/idt.c"
 
 extern void init_IDT();
-extern void setuphw();
+//extern void setuphw();
 
 void sponge(){
 	kprint(0x2, "Sponge\n");
@@ -18,11 +18,9 @@ int main()
 
 	//disable_cursor();
 	kclearscreen();
-//	setuphw();
 	init_IDT();
+//	setuphw();
 	kprint(0x2, "Hello world!\n");
-	outb(0x21,0xff);
-	outb(0xa1,0xff);
 	kprint(0x2, "Hello world!\n");
 	kprint(0x2, "Implementing tabs\n1234567890\n\ttab\n123\ttab\n");
 

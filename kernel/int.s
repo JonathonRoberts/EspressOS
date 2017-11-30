@@ -171,5 +171,6 @@ global LIDT
 LIDT:
 	;lea rax, [rel IDT.Pointer]
 	lidt  [rel IDTP]
+	cli
 
 	retq

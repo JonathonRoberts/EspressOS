@@ -4,7 +4,8 @@ KERNEL=$(BUILD_DIR)/kernel
 AS=nasm
 ASFLAGS=-f bin
 CC=clang
-CFLAGS+=-ffreestanding -nostdlib -gdwarf-2 -m64 -ggdb3 -Wall -Wextra -std=c99 -fno-stack-protector
+CFLAGS+=-ffreestanding -nostdlib -gdwarf-2 -m64 -ggdb3 -Wall -Wextra -std=c99
+#CFLAGS+= -fno-stack-protector
 C_SRCS!=ls *.c
 C_OBJS=$(C_SRCS:.c=.o)
 S_SRCS!=ls *.s
