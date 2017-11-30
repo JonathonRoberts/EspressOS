@@ -107,24 +107,29 @@ void* memset(void* bufptr, int value, size_t size) {
 }
 #define memset(b,c,n)	__builtin_memset((b),(c),(n))
 
+struct IDTPointer IDTP;
+
 extern void isr0();
 extern void loadidt(uint64_t rax);
 extern void sponge();
+extern void LIDT();
+
 void init_IDT()
 {
 	PIC_remap(0x20, 0x28);
 
 	/* Create IDT */
-	struct IDTPointer IDTP;
 	IDTP.DTLimit = (255 * 16) -1;
 	IDTP.BaseAddress = (uint64_t*)&IDT;
+	LIDT();
+
 
 	int i;
 	for(i=0;i<255;i++){
-		setIDT(i,(uint64_t)&isr0,0x8,0x8e,128+15);
+		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 		//memset(&IDT[i],0,15);
 	}
 //	outb(0x21,0xfd);/* Only allow keyboard interrupts */
 //	outb(0xa1,0xff);
-	__asm__ __volatile__("lidtq (%0);sti"::"r"(&IDTP));
+	//__asm__ __volatile__("lidtq (%0);sti"::"r"(&IDTP));
 }

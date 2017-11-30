@@ -87,6 +87,7 @@ GDT:	; 64 bit Global Descriptor Table
 	.Pointer:
 	dw $ - GDT - 1 ; Limit
 	dd GDT ; Base
+	dd 0
 
 Paging:
 	; zero 0x1000 - 0x1496
@@ -151,7 +152,7 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 10 	; Number of sectors to read
+	mov al, 16 	; Number of sectors to read
 	mov ch, 0	; cylinder
 	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number
