@@ -110,6 +110,42 @@ void* memset(void* bufptr, int value, size_t size) {
 struct IDTPointer IDTP;
 
 extern void isr0();
+extern void isr1();
+extern void isr2();
+extern void isr3();
+extern void isr4();
+extern void isr5();
+extern void isr5();
+extern void isr6();
+extern void isr7();
+extern void isr8();
+extern void isr8();
+extern void isr9();
+extern void isr10();
+extern void isr11();
+extern void isr12();
+extern void isr13();
+extern void isr14();
+extern void isr15();
+extern void isr15();
+extern void isr16();
+extern void isr17();
+extern void isr18();
+extern void isr18();
+extern void isr19();
+extern void isr20();
+extern void isr21();
+extern void isr22();
+extern void isr23();
+extern void isr24();
+extern void isr25();
+extern void isr25();
+extern void isr26();
+extern void isr27();
+extern void isr28();
+extern void isr29();
+extern void isr30();
+extern void isr31();
 extern void sponge();
 extern void LIDT();
 
@@ -127,6 +163,52 @@ void init_IDT()
 		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 		//memset(&IDT[i],0,15);
 	}
+
+	//setIDT(0,(uint64_t)isr0,0x8,0x8e,128+15);
+	//setIDT(1,(uint64_t)isr1,0x8,0x8e,128+15);
+	//setIDT(2,(uint64_t)isr2,0x8,0x8e,128+15);
+	//setIDT(3,(uint64_t)isr3,0x8,0x8e,128+15);
+	//setIDT(4,(uint64_t)isr4,0x8,0x8e,128+15);
+	//setIDT(5,(uint64_t)isr5,0x8,0x8e,128+15);
+	//setIDT(5,(uint64_t)isr5,0x8,0x8e,128+15);
+	//setIDT(6,(uint64_t)isr6,0x8,0x8e,128+15);
+	//setIDT(7,(uint64_t)isr7,0x8,0x8e,128+15);
+	//setIDT(8,(uint64_t)isr8,0x8,0x8e,128+15);
+	//setIDT(8,(uint64_t)isr8,0x8,0x8e,128+15);
+	//setIDT(9,(uint64_t)isr9,0x8,0x8e,128+15);
+	//setIDT(10,(uint64_t)isr10,0x8,0x8e,128+15);
+	//setIDT(11,(uint64_t)isr11,0x8,0x8e,128+15);
+	//setIDT(12,(uint64_t)isr12,0x8,0x8e,128+15);
+	//setIDT(13,(uint64_t)isr13,0x8,0x8e,128+15);
+	//setIDT(14,(uint64_t)isr14,0x8,0x8e,128+15);
+	//setIDT(15,(uint64_t)isr15,0x8,0x8e,128+15);
+	//setIDT(15,(uint64_t)isr15,0x8,0x8e,128+15);
+	//setIDT(16,(uint64_t)isr16,0x8,0x8e,128+15);
+	//setIDT(17,(uint64_t)isr17,0x8,0x8e,128+15);
+	//setIDT(18,(uint64_t)isr18,0x8,0x8e,128+15);
+	//setIDT(18,(uint64_t)isr18,0x8,0x8e,128+15);
+	//setIDT(19,(uint64_t)isr19,0x8,0x8e,128+15);
+	//setIDT(20,(uint64_t)isr20,0x8,0x8e,128+15);
+	//setIDT(21,(uint64_t)isr21,0x8,0x8e,128+15);
+	//setIDT(22,(uint64_t)isr22,0x8,0x8e,128+15);
+	//setIDT(23,(uint64_t)isr23,0x8,0x8e,128+15);
+	//setIDT(24,(uint64_t)isr24,0x8,0x8e,128+15);
+	//setIDT(25,(uint64_t)isr25,0x8,0x8e,128+15);
+	//setIDT(25,(uint64_t)isr25,0x8,0x8e,128+15);
+	//setIDT(26,(uint64_t)isr26,0x8,0x8e,128+15);
+	//setIDT(27,(uint64_t)isr27,0x8,0x8e,128+15);
+	//setIDT(28,(uint64_t)isr28,0x8,0x8e,128+15);
+	//setIDT(28,(uint64_t)isr28,0x8,0x8e,128+15);
+	//setIDT(29,(uint64_t)isr29,0x8,0x8e,128+15);
+	//setIDT(30,(uint64_t)isr30,0x8,0x8e,128+15);
+	//setIDT(31,(uint64_t)isr31,0x8,0x8e,128+15);
+	///*
+	//int i;
+	//for(i=0;i<255;i++){
+	//	setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+	//	//memset(&IDT[i],0,15);
+	//}
+	//*/
 	outb(0x21,0xfd);/* Only allow keyboard interrupts */
 	outb(0xa1,0xff);
 }

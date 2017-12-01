@@ -10,7 +10,6 @@ extern void init_IDT();
 
 void sponge(){
 	kprint(0x2, "Sponge\n");
-	isr0();
 	return;
 }
 int main()
