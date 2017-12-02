@@ -30,7 +30,10 @@
 #ifndef _IO_H_
 #define _IO_H_
 
+#ifndef _PARAM_H_
 #include "param.h"
+#endif
+
 void outb(uint16_t port, uint8_t val)
 {
         __asm__ __volatile__("outb %0, %1"::"a"(val),"d"(port));
