@@ -19,6 +19,7 @@ int main()
 	kprint(0x2, "Hello world!\n");
 	kprint(0x2, "Hello world!\n");
 	kprint(0x2, "Implementing tabs\n1234567890\n\ttab\n123\ttab\n");
+	sponge();
 
 	while(1){
 		kputs(0x2,getchar());

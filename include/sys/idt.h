@@ -121,6 +121,8 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 	IDT[i].zero = 0;
 }
 
+extern void sponge();
+
 void init_IDT()
 {
 	PIC_remap(0x20, 0x28);
@@ -129,14 +131,21 @@ void init_IDT()
 	outb(0xa1,0xff);
 
 	/* Create IDT */
-	IDTP.DTLimit = (255 * 16) -1;
+	//IDTP.DTLimit = (255 * 8);
+	IDTP.DTLimit = (58 * 8) ;
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
 	int i;
-	for(i=0;i<255;i++){
+	/* For some reason going higher than 237 corrupts the array
+	 * Possibly related to two more sponge() commands corrupting the
+	 * OS, related to sector size? check with objdump -D
+	 * Minimum size for IDTP.DTLimit is 255*8 , 256 interrupts
+	 * */
+	for(i=0;i<60;i++){
 		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 	}
 	LIDT();
+	sponge();
 
 	//setIDT(0,(uint64_t)isr0,0x8,0x8e,128+15);
 	//setIDT(1,(uint64_t)isr1,0x8,0x8e,128+15);
