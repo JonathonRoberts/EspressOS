@@ -139,6 +139,8 @@ void init_IDT()
 	/* For some reason going higher than 237 corrupts the array
 	 * Possibly related to two more sponge() commands corrupting the
 	 * OS, related to sector size? check with objdump -D
+	 * May be related to loading sectors at 0x500 which only gives
+	 * 30kb free
 	 * Minimum size for IDTP.DTLimit is 255*8 , 256 interrupts
 	 * */
 	for(i=0;i<60;i++){
