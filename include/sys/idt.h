@@ -82,6 +82,12 @@ void PIC_remap(int offset1, int offset2)
 	outb(PIC2_DATA, a2);
 }
 
+/*
+ *
+ * IDT
+ *
+ */
+
 /* 64 bit IDT structure */
 struct IDTDescr
 {
@@ -121,8 +127,6 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 	IDT[i].zero = 0;
 }
 
-extern void sponge();
-
 void init_IDT()
 {
 	PIC_remap(0x20, 0x28);
@@ -131,16 +135,14 @@ void init_IDT()
 	outb(0xa1,0xff);
 
 	/* Create IDT */
-	//IDTP.DTLimit = (255 * 8);
-	IDTP.DTLimit = (58 * 8) ;
+	IDTP.DTLimit = (255 * 8);
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
 	int i;
-	for(i=0;i<255;i++){
+	for(i=0;i<256;i++){
 		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 	}
 	LIDT();
-	sponge();
 
 	//setIDT(0,(uint64_t)isr0,0x8,0x8e,128+15);
 	//setIDT(1,(uint64_t)isr1,0x8,0x8e,128+15);
@@ -180,12 +182,5 @@ void init_IDT()
 	//setIDT(29,(uint64_t)isr29,0x8,0x8e,128+15);
 	//setIDT(30,(uint64_t)isr30,0x8,0x8e,128+15);
 	//setIDT(31,(uint64_t)isr31,0x8,0x8e,128+15);
-	///*
-	//int i;
-	//for(i=0;i<255;i++){
-	//	setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
-	//	//memset(&IDT[i],0,15);
-	//}
-	//*/
 }
 

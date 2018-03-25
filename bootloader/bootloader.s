@@ -147,7 +147,7 @@ boot:
 	;; Read more sectors
 	;;---
 
-	; Start loading at data buffer es:bx = 0x500
+	; Start loading at data buffer es:bx = 0x7e00
 	mov ax, 0x7e0
 	mov es, ax
 	xor bx, bx
