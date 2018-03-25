@@ -43,17 +43,21 @@ LIDT:
 
 isr0:
 	cli
-	;hlt
-	;iretq
-	;cli
 	push qword 9
 	PUSH_ALL
 	call sponge
 	jmp isr_ret
 isr1:
+;Keyboard interrupt
 	cli
-	push qword 0
 	PUSH_ALL
+	in al,60h		; Read keypress from port 60h
+	mov [0xb8000], al	; print scancode
+
+	mov ah, 0x02		; colour
+	mov [0xb8001], ah
+
+	push qword 0
 	jmp isr_ret
 isr2:
 	cli
@@ -211,5 +215,6 @@ isr_ret:
 	out 0x20, ax	; Send end of interrupt command to master PIC
 	POP_ALL
 	cld
+	sti
 	add rsp, 8
 	iretq
