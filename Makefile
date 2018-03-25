@@ -27,6 +27,10 @@ qemu-gdb:
 	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -gdb tcp::26000 -S
 qemu:
 	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG)
+qemuf-gdb:
+	qemu-system-x86_64 -machine q35 -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
+qemuf:
+	qemu-system-x86_64 -machine q35 -fda $(FLOPPY_IMG)
 
 clean:
 	make -C bootloader clean

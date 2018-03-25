@@ -148,7 +148,7 @@ boot:
 	;;---
 
 	; Start loading at data buffer es:bx = 0x500
-	mov ax, 0x50
+	mov ax, 0x800
 	mov es, ax
 	xor bx, bx
 
@@ -194,12 +194,12 @@ LongMode:
 	;mov rax, 0x1f201f201f201f20 ;blue bg, space
 	;mov ecx, 501
 	;rep stosq
-	;mov esp, 0x105000	; move stack pointer to 0x105000
+	mov esp, 0x8000		; move stack pointer to 0x105000
 
-	jmp [500h + 18h]	; Jump to and execute the loaded sector
+	jmp [0x8000 +18h]	; Jump to and execute the loaded sector
 
 ;; Required to boot
 ; Fill rest boot sector with 0's, required to boot from floppy
 times 510 - ($-$$) db 0
 ; Boot signature the bios looks for
-dw 0xAA55
+

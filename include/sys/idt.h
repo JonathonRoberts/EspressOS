@@ -136,14 +136,7 @@ void init_IDT()
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
 	int i;
-	/* For some reason going higher than 237 corrupts the array
-	 * Possibly related to two more sponge() commands corrupting the
-	 * OS, related to sector size? check with objdump -D
-	 * May be related to loading sectors at 0x500 which only gives
-	 * 30kb free
-	 * Minimum size for IDTP.DTLimit is 255*8 , 256 interrupts
-	 * */
-	for(i=0;i<60;i++){
+	for(i=0;i<255;i++){
 		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
 	}
 	LIDT();

@@ -1,4 +1,5 @@
 ENTRY(main)
+OUTPUT_FORMAT(elf64-x86-64)
 
 PHDRS{
 	headers PT_PHDR FILEHDR PHDRS;
@@ -6,7 +7,7 @@ PHDRS{
 }
 
 SECTIONS{
-	.text 0x600: ALIGN(0x100) {*(.text) } :code
+	.text 0x8100: ALIGN(0x100) {*(.text) } :code
 	.data : {*(.data) }
 	.bss : {*(.bss) }
 	/DISCARD/ : {*(.eh_frame)}
