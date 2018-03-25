@@ -22,7 +22,7 @@ int main()
 	sponge();
 
 	while(1){
-		kputs(0x2,getchar());
+//		kputs(0x2,getchar());
 
 	}
 	__asm__("hlt");

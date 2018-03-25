@@ -48,6 +48,7 @@ isr0:
 	;cli
 	push qword 9
 	PUSH_ALL
+	call sponge
 	jmp isr_ret
 isr1:
 	cli
@@ -207,7 +208,7 @@ isr31:
 
 isr_ret:
 	mov ax, 0x20
-	out 0x20, ax
+	out 0x20, ax	; Send end of interrupt command to master PIC
 	POP_ALL
 	cld
 	add rsp, 8

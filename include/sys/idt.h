@@ -140,7 +140,7 @@ void init_IDT()
 
 	int i;
 	for(i=0;i<256;i++){
-		setIDT(i,(uint64_t)isr0,0x8,0x8e,128+15);
+		setIDT(i,(uint64_t)isr0,0x8,0x8,128+15);
 	}
 	LIDT();
 
