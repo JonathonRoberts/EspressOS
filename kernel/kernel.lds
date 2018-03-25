@@ -7,7 +7,7 @@ PHDRS{
 }
 
 SECTIONS{
-	.text 0x8100: ALIGN(0x100) {*(.text) } :code
+	.text 0x7f00: ALIGN(0x100) {*(.text) } :code
 	.data : {*(.data) }
 	.bss : {*(.bss) }
 	/DISCARD/ : {*(.eh_frame)}
