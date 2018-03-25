@@ -1,42 +1,68 @@
 extern void isr0();
 extern void isr1();
-extern void isr2();
 extern void isr3();
 extern void isr4();
-extern void isr5();
 extern void isr5();
 extern void isr6();
 extern void isr7();
 extern void isr8();
 extern void isr8();
-extern void isr9();
 extern void isr10();
 extern void isr11();
 extern void isr12();
 extern void isr13();
 extern void isr14();
-extern void isr15();
-extern void isr15();
 extern void isr16();
 extern void isr17();
 extern void isr18();
 extern void isr18();
 extern void isr19();
-extern void isr20();
-extern void isr21();
-extern void isr22();
-extern void isr23();
-extern void isr24();
-extern void isr25();
-extern void isr25();
-extern void isr26();
-extern void isr27();
-extern void isr28();
-extern void isr29();
-extern void isr30();
-extern void isr31();
+
+extern void oisr0();
+extern void oisr1();
+//extern void oisr2();
+//extern void oisr3();
+//extern void oisr4();
+//extern void oisr5();
+//extern void oisr5();
+//extern void oisr6();
+//extern void oisr7();
+//extern void oisr8();
+//extern void oisr8();
+//extern void oisr9();
+//extern void oisr10();
+//extern void oisr11();
+//extern void oisr12();
+//extern void oisr13();
+//extern void oisr14();
+//extern void oisr15();
+//extern void oisr15();
+//extern void oisr16();
+//extern void oisr17();
+//extern void oisr18();
+//extern void oisr18();
+//extern void oisr19();
+//extern void oisr20();
+//extern void oisr21();
+//extern void oisr22();
+//extern void oisr23();
+//extern void oisr24();
+//extern void oisr25();
+//extern void oisr25();
+//extern void oisr26();
+//extern void oisr27();
+//extern void oisr28();
+//extern void oisr29();
+//extern void oisr30();
+//extern void oisr31();
 
 extern void LIDT();
+
+/*
+ *
+ * PIC
+ *
+ */
 
 /* reinitialize the PIC controllers, giving them specified vector offsets
    rather than 8h and 70h, as configured by default */
@@ -52,6 +78,9 @@ extern void LIDT();
 #define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
+
+#define OFFSET1		0x20		/* Master PIC offset */
+#define OFFSET2		0x28		/* Slave PIC offset */
 
 void PIC_remap(int offset1, int offset2)
 {
@@ -110,11 +139,12 @@ struct IDTPointer
 }__attribute__((packed));
 
 /* Declare IDT and IDTP */
-struct IDTDescr IDT[256];
+struct IDTDescr IDT[512];
 struct IDTPointer IDTP;
 
 void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint8_t type_attr)
 {
+	//i += OFFSET1;
 	uint16_t offset1 = (uint16_t)(functionPtr & 0xffff);
 	uint16_t offset2 = (uint16_t)(functionPtr >> 16) & 0xffff;
 	uint32_t offset3 = (uint32_t)(functionPtr >> 32) & 0xffffffff;
@@ -129,59 +159,43 @@ void setIDT(uint8_t i, uint64_t functionPtr, uint16_t selector, uint8_t ist,uint
 
 void init_IDT()
 {
-	PIC_remap(0x20, 0x28);
+	PIC_remap(OFFSET1, OFFSET2);
 
-	outb(0x21,0xfd);/* Only allow keyboard interrupts */
-	outb(0xa1,0xff);
+//	outb(0x21,0xfd);/* Only allow keyboard interrupts */
+//	outb(0xa1,0xff);
 
 	/* Create IDT */
-	IDTP.DTLimit = (255 * 8);
+	IDTP.DTLimit = (511 * 8);
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
+	/* Initialise array with present bit = 0 for all interrupts */
 	int i;
-	for(i=0;i<256;i++){
-		setIDT(i,(uint64_t)isr2,0x8,0x8,128+15);
+	for(i=0;i<512;i++){
+		IDT[i].type_attr = 0;
 	}
 
-	//setIDT(0,(uint64_t)isr0,0x8,0x8,128+15);
+	//setIDT(0,(uint64_t)isr0,0x8,0x8,128+15); /* Divide by Zero */
 	//setIDT(1,(uint64_t)isr1,0x8,0x8,128+15);
-	//setIDT(2,(uint64_t)isr2,0x8,0x8,128+15);
-	//setIDT(3,(uint64_t)isr3,0x8,0x8,128+15);
-	//setIDT(4,(uint64_t)isr4,0x8,0x8,128+15);
+	setIDT(3,(uint64_t)isr3,0x8,0x8,128+15); /* breakpoint */
+	///setIDT(4,(uint64_t)isr4,0x8,0x8,128+15);
 	//setIDT(5,(uint64_t)isr5,0x8,0x8,128+15);
 	//setIDT(5,(uint64_t)isr5,0x8,0x8,128+15);
 	//setIDT(6,(uint64_t)isr6,0x8,0x8,128+15);
 	//setIDT(7,(uint64_t)isr7,0x8,0x8,128+15);
 	//setIDT(8,(uint64_t)isr8,0x8,0x8,128+15);
 	//setIDT(8,(uint64_t)isr8,0x8,0x8,128+15);
-	//setIDT(9,(uint64_t)isr9,0x8,0x8,128+15);
 	//setIDT(10,(uint64_t)isr10,0x8,0x8,128+15);
 	//setIDT(11,(uint64_t)isr11,0x8,0x8,128+15);
 	//setIDT(12,(uint64_t)isr12,0x8,0x8,128+15);
 	//setIDT(13,(uint64_t)isr13,0x8,0x8,128+15);
 	//setIDT(14,(uint64_t)isr14,0x8,0x8,128+15);
-	//setIDT(15,(uint64_t)isr15,0x8,0x8,128+15);
-	//setIDT(15,(uint64_t)isr15,0x8,0x8,128+15);
 	//setIDT(16,(uint64_t)isr16,0x8,0x8,128+15);
 	//setIDT(17,(uint64_t)isr17,0x8,0x8,128+15);
 	//setIDT(18,(uint64_t)isr18,0x8,0x8,128+15);
 	//setIDT(18,(uint64_t)isr18,0x8,0x8,128+15);
 	//setIDT(19,(uint64_t)isr19,0x8,0x8,128+15);
-	//setIDT(20,(uint64_t)isr20,0x8,0x8,128+15);
-	//setIDT(21,(uint64_t)isr21,0x8,0x8,128+15);
-	//setIDT(22,(uint64_t)isr22,0x8,0x8,128+15);
-	//setIDT(23,(uint64_t)isr23,0x8,0x8,128+15);
-	//setIDT(24,(uint64_t)isr24,0x8,0x8,128+15);
-	//setIDT(25,(uint64_t)isr25,0x8,0x8,128+15);
-	//setIDT(25,(uint64_t)isr25,0x8,0x8,128+15);
-	//setIDT(26,(uint64_t)isr26,0x8,0x8,128+15);
-	//setIDT(27,(uint64_t)isr27,0x8,0x8,128+15);
-	//setIDT(28,(uint64_t)isr28,0x8,0x8,128+15);
-	//setIDT(28,(uint64_t)isr28,0x8,0x8,128+15);
-	//setIDT(29,(uint64_t)isr29,0x8,0x8,128+15);
-	//setIDT(30,(uint64_t)isr30,0x8,0x8,128+15);
-	//setIDT(31,(uint64_t)isr31,0x8,0x8,128+15);
-	setIDT(32,(uint64_t)isr1,0x8,0x8,128+15);
+	setIDT(0+OFFSET1,(uint64_t)oisr0,0x8,0x8,128+15); /* Timer */
+	setIDT(1+OFFSET1,(uint64_t)oisr1,0x8,0x8,128+15); /* Keyboard */
 	LIDT();
 }
 
