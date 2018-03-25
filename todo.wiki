@@ -16,5 +16,10 @@
 ** [*] Turn interrupts on with sti
 * [ ] Filesystem
 * [ ] Print to serial port
+* [ ] Dump registers command
+* [ ] kprintf command
 * [ ] LibC
+** * [ ] malloc
+** * [ ] free
+
 

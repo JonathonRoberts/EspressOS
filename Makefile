@@ -1,6 +1,6 @@
 BUILD_DIR=build
 BOOTLOADER=$(BUILD_DIR)/bootloader/bootloader.o
-KERNEL=$(BUILD_DIR)/kernel/kernel
+KERNEL=$(BUILD_DIR)/kernel/kernel.bin
 FLOPPY_IMG=disk.img
 DISK_IMG=disk.iso
 

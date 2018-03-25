@@ -1,5 +1,5 @@
 BUILD_DIR=../build/kernel
-KERNEL=$(BUILD_DIR)/kernel
+KERNEL=$(BUILD_DIR)/kernel.bin
 
 AS=nasm
 ASFLAGS=-f bin
