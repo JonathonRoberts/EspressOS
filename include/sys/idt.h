@@ -201,19 +201,19 @@ void init_IDT()
 	/* Interrupts */
 	setIDT(32,(uint64_t)isr32,0x8,0x8,128+15);	/* Timer */
 	setIDT(33,(uint64_t)isr33,0x8,0x8,128+15);	/* Keyboard */
-	//setIDT(33,(uint64_t)isr33,0x8,0x8,128+15);	/* Cascade */
-	//setIDT(34,(uint64_t)isr34,0x8,0x8,128+15);	/* COM2 */
-	//setIDT(35,(uint64_t)isr35,0x8,0x8,128+15);	/* COM1 */
-	//setIDT(36,(uint64_t)isr36,0x8,0x8,128+15);	/* LPT2 */
-	//setIDT(37,(uint64_t)isr37,0x8,0x8,128+15);	/* Floppy Disk */
-	//setIDT(38,(uint64_t)isr38,0x8,0x8,128+15);	/* LTP1 */
-	//setIDT(39,(uint64_t)isr39,0x8,0x8,128+15);	/* CMOS real time clock */
-	//setIDT(40,(uint64_t)isr40,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
-	//setIDT(41,(uint64_t)isr41,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
-	//setIDT(42,(uint64_t)isr42,0x8,0x8,128+15);	/* PS2 Mouse */
-	//setIDT(43,(uint64_t)isr43,0x8,0x8,128+15);	/* FPU/Coprocessor/Inter-processor */
-	//setIDT(44,(uint64_t)isr44,0x8,0x8,128+15);	/* Primary ATA Hard Disk */
-	//setIDT(45,(uint64_t)isr45,0x8,0x8,128+15);	/* Secondary ATA Hard Disk */
+	//setIDT(34,(uint64_t)isr33,0x8,0x8,128+15);	/* Cascade */
+	//setIDT(35,(uint64_t)isr34,0x8,0x8,128+15);	/* COM2 */
+	//setIDT(36,(uint64_t)isr35,0x8,0x8,128+15);	/* COM1 */
+	//setIDT(37,(uint64_t)isr36,0x8,0x8,128+15);	/* LPT2 */
+	//setIDT(38,(uint64_t)isr37,0x8,0x8,128+15);	/* Floppy Disk */
+	//setIDT(39,(uint64_t)isr38,0x8,0x8,128+15);	/* LTP1 */
+	//setIDT(40,(uint64_t)isr39,0x8,0x8,128+15);	/* CMOS real time clock */
+	//setIDT(41,(uint64_t)isr40,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
+	//setIDT(42,(uint64_t)isr41,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
+	//setIDT(43,(uint64_t)isr42,0x8,0x8,128+15);	/* PS2 Mouse */
+	//setIDT(44,(uint64_t)isr43,0x8,0x8,128+15);	/* FPU/Coprocessor/Inter-processor */
+	//setIDT(45,(uint64_t)isr44,0x8,0x8,128+15);	/* Primary ATA Hard Disk */
+	//setIDT(46,(uint64_t)isr45,0x8,0x8,128+15);	/* Secondary ATA Hard Disk */
 	LIDT();
 }
 
