@@ -167,18 +167,83 @@ isr32:
 	PUSH_ALL
 	jmp isr_ret
 isr33:
-;Keyboard interrupt
+;Cascade
 	cli
 	PUSH_ALL
-	in al,60h		; Read keypress from port 60h
-	mov [0xb8000], al	; print scancode
-
-	mov ah, 0x02		; colour
-	mov [0xb8001], ah
-
 	push qword 0
 	jmp isr_ret
-
+isr34:
+;#COM2
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr35:
+;#COM1
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr36:
+;#LTP2
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr37:
+;#Floppy Disk
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr38:
+;#LTP1
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr39:
+;#CMOS Real Time Clock
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr40:
+;#Peripherals/Legacy SCSI/NIC
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr41:
+;#Peripherals/Legacy SCSI/NIC
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr42:
+;#PS2 Mouse
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr43:
+;#FPU/CoProcessor/Inter-Processor
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr44:
+;#Primary ATA Hard Drive
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
+isr45:
+;#Secondary ATA Hard Drive
+	cli
+	push qword 0
+	PUSH_ALL
+	jmp isr_ret
 isr_ret:
 	mov ax, 0x20
 	out 0x20, ax	; Send end of interrupt command to master PIC
