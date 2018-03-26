@@ -10,14 +10,14 @@
 * [X] Keep track of working line
 * [X] Move cursor
 * [X] Keyboard input
-* [ ] Write interrupt routines
+* [X] Write some interrupt routines
 ** [*] Create and load IDT
 ** [*] Remap PIC
 ** [*] Turn interrupts on with sti
+* [ ] kprintf command
+* [ ] Dump registers command
 * [ ] Filesystem
 * [ ] Print to serial port
-* [ ] Dump registers command
-* [ ] kprintf command
 * [ ] LibC
 ** * [ ] malloc
 ** * [ ] free
