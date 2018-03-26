@@ -1,4 +1,4 @@
-global isr0
+;global isr0
 global isr1
 global isr3
 global isr4
@@ -16,38 +16,37 @@ global isr17
 global isr18
 global isr19
 
-global oisr0
-global oisr1
-;global oisr2
-;global oisr3
-;global oisr4
-;global oisr5
-;global oisr6
-;global oisr7
-;global oisr8
-;global oisr9
-;global oisr10
-;global oisr11
-;global oisr12
-;global oisr13
-;global oisr14
-;global oisr15
-;global oisr16
-;global oisr17
-;global oisr18
-;global oisr19
-;global oisr20
-;global oisr21
-;global oisr22
-;global oisr23
-;global oisr24
-;global oisr25
-;global oisr26
-;global oisr27
-;global oisr28
-;global oisr29
-;global oisr30
-;global oisr31
+global isr32
+global isr33
+;global isr33
+;global isr34
+;global isr35
+;global isr36
+;global isr37
+;global isr38
+;global isr39
+;global isr40
+;global isr41
+;global isr42
+;global isr43
+;global isr44
+;global isr45
+;global isr46
+;global isr47
+;global isr48
+;global isr49
+;global isr50
+;global isr51
+;global isr52
+;global isr53
+;global isr54
+;global isr55
+;global isr56
+;global isr57
+;global isr58
+;global isr59
+;global isr60
+;global isr61
 
 %include "macros.s"
 extern sponge
@@ -58,13 +57,12 @@ LIDT:
 	lidt [rel IDTP]
 	sti
 	ret
-
-isr0:
-;#DE Divide by Zero
-	cli
-	push qword 0
-	PUSH_ALL
-	jmp isr_ret
+;isr0:
+;;#DE Divide by Zero
+;	cli
+;	push qword 0
+;	PUSH_ALL
+;	jmp isr_ret
 isr1:
 ;#DB Debug
 	cli
@@ -162,13 +160,13 @@ isr19:
 	push qword 0 ;push faux error code to create uniform stack size
 	PUSH_ALL
 	jmp isr_ret
-oisr0:
+isr32:
 ;Time
 	cli
 	push qword 0 ;push faux error code to create uniform stack size
 	PUSH_ALL
 	jmp isr_ret
-oisr1:
+isr33:
 ;Keyboard interrupt
 	cli
 	PUSH_ALL
@@ -180,8 +178,6 @@ oisr1:
 
 	push qword 0
 	jmp isr_ret
-oisr2:
-oisr3:
 
 isr_ret:
 	mov ax, 0x20

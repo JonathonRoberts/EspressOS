@@ -1,4 +1,5 @@
-extern void isr0();
+//extern void isr0();
+void isr0();
 extern void isr1();
 extern void isr3();
 extern void isr4();
@@ -18,43 +19,43 @@ extern void isr18();
 extern void isr18();
 extern void isr19();
 
-extern void oisr0();
-extern void oisr1();
-//extern void oisr2();
-//extern void oisr3();
-//extern void oisr4();
-//extern void oisr5();
-//extern void oisr5();
-//extern void oisr6();
-//extern void oisr7();
-//extern void oisr8();
-//extern void oisr8();
-//extern void oisr9();
-//extern void oisr10();
-//extern void oisr11();
-//extern void oisr12();
-//extern void oisr13();
-//extern void oisr14();
-//extern void oisr15();
-//extern void oisr15();
-//extern void oisr16();
-//extern void oisr17();
-//extern void oisr18();
-//extern void oisr18();
-//extern void oisr19();
-//extern void oisr20();
-//extern void oisr21();
-//extern void oisr22();
-//extern void oisr23();
-//extern void oisr24();
-//extern void oisr25();
-//extern void oisr25();
-//extern void oisr26();
-//extern void oisr27();
-//extern void oisr28();
-//extern void oisr29();
-//extern void oisr30();
-//extern void oisr31();
+extern void isr32();
+extern void isr33();
+//extern void isr32();
+//extern void isr33();
+//extern void isr34();
+//extern void isr35();
+//extern void isr35();
+//extern void isr36();
+//extern void isr37();
+//extern void isr38();
+//extern void isr38();
+//extern void isr39();
+//extern void isr40();
+//extern void isr41();
+//extern void isr42();
+//extern void isr43();
+//extern void isr44();
+//extern void isr45();
+//extern void isr45();
+//extern void isr46();
+//extern void isr47();
+//extern void isr48();
+//extern void isr48();
+//extern void isr49();
+//extern void isr50();
+//extern void isr51();
+//extern void isr52();
+//extern void isr53();
+//extern void isr54();
+//extern void isr55();
+//extern void isr55();
+//extern void isr56();
+//extern void isr57();
+//extern void isr58();
+//extern void isr59();
+//extern void isr60();
+//extern void isr61();
 
 extern void LIDT();
 
@@ -161,41 +162,71 @@ void init_IDT()
 {
 	PIC_remap(OFFSET1, OFFSET2);
 
-//	outb(0x21,0xfd);/* Only allow keyboard interrupts */
-//	outb(0xa1,0xff);
-
 	/* Create IDT */
 	IDTP.DTLimit = (511 * 8);
 	IDTP.BaseAddress = (uint64_t*)&IDT;
 
-	/* Initialise array with present bit = 0 for all interrupts */
+	/* Initialise IDT array with present bit of 0 for all interrupts */
 	int i;
 	for(i=0;i<512;i++){
 		IDT[i].type_attr = 0;
 	}
 
-	//setIDT(0,(uint64_t)isr0,0x8,0x8,128+15); /* Divide by Zero */
-	//setIDT(1,(uint64_t)isr1,0x8,0x8,128+15);
-	setIDT(3,(uint64_t)isr3,0x8,0x8,128+15); /* breakpoint */
-	///setIDT(4,(uint64_t)isr4,0x8,0x8,128+15);
-	//setIDT(5,(uint64_t)isr5,0x8,0x8,128+15);
-	//setIDT(5,(uint64_t)isr5,0x8,0x8,128+15);
-	//setIDT(6,(uint64_t)isr6,0x8,0x8,128+15);
-	//setIDT(7,(uint64_t)isr7,0x8,0x8,128+15);
-	//setIDT(8,(uint64_t)isr8,0x8,0x8,128+15);
-	//setIDT(8,(uint64_t)isr8,0x8,0x8,128+15);
-	//setIDT(10,(uint64_t)isr10,0x8,0x8,128+15);
-	//setIDT(11,(uint64_t)isr11,0x8,0x8,128+15);
-	//setIDT(12,(uint64_t)isr12,0x8,0x8,128+15);
-	//setIDT(13,(uint64_t)isr13,0x8,0x8,128+15);
-	//setIDT(14,(uint64_t)isr14,0x8,0x8,128+15);
-	//setIDT(16,(uint64_t)isr16,0x8,0x8,128+15);
-	//setIDT(17,(uint64_t)isr17,0x8,0x8,128+15);
-	//setIDT(18,(uint64_t)isr18,0x8,0x8,128+15);
-	//setIDT(18,(uint64_t)isr18,0x8,0x8,128+15);
-	//setIDT(19,(uint64_t)isr19,0x8,0x8,128+15);
-	setIDT(0+OFFSET1,(uint64_t)oisr0,0x8,0x8,128+15); /* Timer */
-	setIDT(1+OFFSET1,(uint64_t)oisr1,0x8,0x8,128+15); /* Keyboard */
+	/*
+	 *
+	 * Exceptions
+	 * Traps, Faults, and Aborts
+	 *
+	 */
+	setIDT(0,(uint64_t)isr0,0x8,0x8,128+15);	/* F - Divide by Zero */
+	//setIDT(1,(uint64_t)isr1,0x8,0x8,128+15);	/* T - Debug */
+	setIDT(3,(uint64_t)isr3,0x8,0x8,128+15);	/* T - Breakpoint */
+	///setIDT(4,(uint64_t)isr4,0x8,0x8,128+15);	/* T - Overflow */
+	//setIDT(5,(uint64_t)isr5,0x8,0x8,128+15);	/* F - Bound Range Exceeded */
+	//setIDT(6,(uint64_t)isr6,0x8,0x8,128+15);	/* F - Invalid Opcode */
+	//setIDT(7,(uint64_t)isr7,0x8,0x8,128+15);	/* F - Device Not Available */
+	//setIDT(8,(uint64_t)isr8,0x8,0x8,128+15);	/* A - Double Fault */
+	//setIDT(10,(uint64_t)isr10,0x8,0x8,128+15);	/* F - Invalid TSS  */
+	//setIDT(11,(uint64_t)isr11,0x8,0x8,128+15);	/* F - Segment Not Present */
+	//setIDT(12,(uint64_t)isr12,0x8,0x8,128+15);	/* F - Stack-Segment Fault */
+	//setIDT(13,(uint64_t)isr13,0x8,0x8,128+15);	/* F - General Protection Fault */
+	//setIDT(14,(uint64_t)isr14,0x8,0x8,128+15);	/* F - Page Fault */
+	//setIDT(16,(uint64_t)isr16,0x8,0x8,128+15);	/* F - x87 Floating-Point Exception */
+	//setIDT(17,(uint64_t)isr17,0x8,0x8,128+15);	/* F - Alignment Check */
+	//setIDT(18,(uint64_t)isr18,0x8,0x8,128+15);	/* A - Machine Check */
+	//setIDT(19,(uint64_t)isr19,0x8,0x8,128+15);	/* F - SIMD Floating-Point Exception */
+	//setIDT(20,(uint64_t)isr19,0x8,0x8,128+15);	/* F - Virtualisation Exception */
+	//setIDT(30,(uint64_t)isr19,0x8,0x8,128+15);	/* F - Security Exception */
+
+	/* Interrupts */
+	setIDT(32,(uint64_t)isr32,0x8,0x8,128+15);	/* Timer */
+	setIDT(33,(uint64_t)isr33,0x8,0x8,128+15);	/* Keyboard */
+	//setIDT(33,(uint64_t)isr33,0x8,0x8,128+15);	/* Cascade */
+	//setIDT(34,(uint64_t)isr34,0x8,0x8,128+15);	/* COM2 */
+	//setIDT(35,(uint64_t)isr35,0x8,0x8,128+15);	/* COM1 */
+	//setIDT(36,(uint64_t)isr36,0x8,0x8,128+15);	/* LPT2 */
+	//setIDT(37,(uint64_t)isr37,0x8,0x8,128+15);	/* Floppy Disk */
+	//setIDT(38,(uint64_t)isr38,0x8,0x8,128+15);	/* LTP1 */
+	//setIDT(39,(uint64_t)isr39,0x8,0x8,128+15);	/* CMOS real time clock */
+	//setIDT(40,(uint64_t)isr40,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
+	//setIDT(41,(uint64_t)isr41,0x8,0x8,128+15);	/* Peripherals/legacy SCSI/NIC */
+	//setIDT(42,(uint64_t)isr42,0x8,0x8,128+15);	/* PS2 Mouse */
+	//setIDT(43,(uint64_t)isr43,0x8,0x8,128+15);	/* FPU/Coprocessor/Inter-processor */
+	//setIDT(44,(uint64_t)isr44,0x8,0x8,128+15);	/* Primary ATA Hard Disk */
+	//setIDT(45,(uint64_t)isr45,0x8,0x8,128+15);	/* Secondary ATA Hard Disk */
 	LIDT();
 }
 
+/*
+ *
+ * Interrupts
+ *
+ */
+void isr0(){
+	/* #DE Divide by Zero */
+	kprint(0x02, "#DE - Division by Zero");
+	__asm__ __volatile__(
+			"cli\n"
+			"hlt"
+			);
+}

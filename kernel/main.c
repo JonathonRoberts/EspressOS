@@ -25,6 +25,9 @@ int main()
 //		kputs(0x2,getchar());
 
 	}
-	__asm__("hlt");
+	__asm__(
+			"cli\n"
+			"hlt"
+			);
 	return 0;
 }
