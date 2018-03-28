@@ -7,8 +7,28 @@ PHDRS{
 }
 
 SECTIONS{
-	.text 0x7f00: ALIGN(0x100) {*(.text) } :code
-	.data : {*(.data) }
-	.bss : {*(.bss) }
-	/DISCARD/ : {*(.eh_frame)}
+	.text 0x7f00: ALIGN(0x100)
+	{
+		*(.text)
+	} :code
+
+	.rodata :
+	{
+		*(.rodata)
+	}
+
+	.data :
+	{
+		*(.data)
+	}
+
+	.bss :
+	{
+		*(COMMON)
+		*(.bss)
+	}
+	/DISCARD/ :
+	{
+		*(.eh_frame)
+	}
 }
