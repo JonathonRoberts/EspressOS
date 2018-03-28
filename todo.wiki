@@ -14,10 +14,10 @@
 ** [*] Create and load IDT
 ** [*] Remap PIC
 ** [*] Turn interrupts on with sti
+* [*] Print to serial port
 * [ ] kprintf command
 * [ ] Dump registers command
 * [ ] Filesystem
-* [ ] Print to serial port
 * [ ] LibC
 ** * [ ] malloc
 ** * [ ] free

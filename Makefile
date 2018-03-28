@@ -32,6 +32,13 @@ qemuf-gdb:
 qemuf:
 	qemu-system-x86_64 -machine q35 -fda $(FLOPPY_IMG)
 
+#serial:
+#	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -serial "pty" -nographic
+#connect:
+#	doas cu -s 38400 -l /dev/ttyp9
+serial:
+	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -nographic
+
 clean:
 	make -C bootloader clean
 	make -C kernel clean

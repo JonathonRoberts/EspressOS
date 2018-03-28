@@ -22,6 +22,7 @@ int main()
 	sponge();
 	__asm__("int3");
 	while(1){
+		write_serial('a');
 //		kputs(0x2,getchar());
 
 	}
