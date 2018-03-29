@@ -194,7 +194,7 @@ LongMode:
 	;mov rax, 0x1f201f201f201f20 ;blue bg, space
 	;mov ecx, 501
 	;rep stosq
-	mov esp, 0x7e00		; move stack pointer to 0x105000
+	mov esp, 0x7e00		; move stack pointer
 
 	jmp [0x7e00 +18h]	; Jump to and execute the loaded sector
 

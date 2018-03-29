@@ -34,6 +34,12 @@
 #include "param.h"
 #endif
 
+int serial_received();
+char read_serial();
+int is_transmit_empty();
+void write_serial(char a);
+
+
 void outb(uint16_t port, uint8_t val)
 {
         __asm__ __volatile__("outb %0, %1"::"a"(val),"d"(port));
@@ -217,5 +223,6 @@ void write_serial(char a)
 
    outb(PORT,a);
 }
+
 #endif
 
