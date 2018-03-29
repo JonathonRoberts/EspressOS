@@ -4,11 +4,7 @@
 #include "../include/sys/io.h"
 #include "../include/sys/param.h"
 #include "../include/sys/idt.h"
-
-void sponge(){
-	kprint(0x2, "Sponge\n");
-	return;
-}
+#include "../include/sys/debug.h"
 
 int main()
 {
@@ -21,14 +17,26 @@ int main()
 	kprint(0x2, "Implementing tabs\n1234567890\n\ttab\n123\ttab\n");
 	sponge();
 	__asm__("int3");
+	char a;
 	while(1){
-		write_serial('a');
+		a = read_serial();
+		if(a =='q')
+		{
+			qemushutdown();
+		}
+		else
+		{
+		write_serial(a);
+		}
+
 //		kputs(0x2,getchar());
 
 	}
+	/*
 	__asm__(
 			"cli\n"
 			"hlt"
 			);
+	*/
 	return 0;
 }

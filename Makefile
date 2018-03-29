@@ -3,6 +3,8 @@ BOOTLOADER=$(BUILD_DIR)/bootloader/bootloader.o
 KERNEL=$(BUILD_DIR)/kernel/kernel.bin
 FLOPPY_IMG=disk.img
 DISK_IMG=disk.iso
+DEBUG_EXIT=-device isa-debug-exit,iobase=0xf4,iosize=0x04
+QEMU=qemu-system-x86_64 -machine q35 $(DEBUG_EXIT)
 
 all: bootdisk cdrom
 
@@ -24,20 +26,20 @@ cdrom:
 	mkisofs -o $(DISK_IMG) -V KERNEL -b $(FLOPPY_IMG) $(BUILD_DIR)/tmp
 
 qemu-gdb:
-	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -gdb tcp::26000 -S
+	$(QEMU)  -cdrom $(DISK_IMG) -gdb tcp::26000 -S
 qemu:
-	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG)
+	$(QEMU) -cdrom $(DISK_IMG)
 qemuf-gdb:
-	qemu-system-x86_64 -machine q35 -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
+	$(QEMU) -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
 qemuf:
-	qemu-system-x86_64 -machine q35 -fda $(FLOPPY_IMG)
+	$(QEMU) -fda $(FLOPPY_IMG)
 
 #serial:
 #	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -serial "pty" -nographic
 #connect:
 #	doas cu -s 38400 -l /dev/ttyp9
 serial:
-	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -nographic
+	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -nographic $(DEBUG_EXIT)
 
 clean:
 	make -C bootloader clean
