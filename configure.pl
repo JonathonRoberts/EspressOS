@@ -22,14 +22,14 @@ sub checkprograms;
 if($OS =~ /linux/i){
 	push( @programs,"yasm");
 	unless(&checkprograms){exit 1;}
-	system("cp src/linux/kernel/Makefile.linux kernel/Makefile");
-	system("cp src/linux/bootloader/Makefile.linux bootloader/Makefile");
+	system("cp src/linux/kernel/Makefile kernel/Makefile");
+	system("cp src/linux/bootloader/Makefile bootloader/Makefile");
 	exit 0;
 }
 elsif($OS =~ /openbsd/i){
 	unless(&checkprograms){exit 1;}
-	system("cp src/openbsd/kernel/Makefile.openbsd kernel/Makefile");
-	system("cp src/openbsd/bootloader/Makefile.openbsd bootloader/Makefile");
+	system("cp src/openbsd/kernel/Makefile kernel/Makefile");
+	system("cp src/openbsd/bootloader/Makefile bootloader/Makefile");
 	exit 0;
 }
 else{
