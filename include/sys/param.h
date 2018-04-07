@@ -35,6 +35,8 @@
 #define VIDEO_ROWS 25
 #define TAB_SPACE 8
 
+#define SERIAL_COLS 90
+
 #define PIC1            0x20            /* IO base address for master PIC */
 #define PIC2            0xA0            /* IO base address for slave PIC */
 #define PIC1_COMMAND    PIC1
@@ -146,4 +148,5 @@ char *scancode = dvorakscancode;
 
 static int cx = 0;
 static int cy = 0;
+int scx = 0; /* Serial port column counter */
  #endif

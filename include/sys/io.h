@@ -224,5 +224,41 @@ void write_serial(char a)
    outb(PORT,a);
 }
 
+void skprint(char *string)
+{
+	char a;
+
+	while((char)*string!=0)
+	{
+		a = *string++;
+		switch(a){
+			case '\t': {
+					if(scx<SERIAL_COLS-TAB_SPACE-1){
+							write_serial(' ');
+							scx++;
+						while(scx%TAB_SPACE){
+							write_serial(' ');
+							scx++;
+						}
+						break;
+					}
+				   }
+			case '\n': {
+					while(++scx<SERIAL_COLS){
+						write_serial(' ');
+					}
+					scx=0;
+					break;
+				   }
+			default :{
+				write_serial(a);
+				if(++scx>=SERIAL_COLS){
+					scx=0;;
+				}
+			}
+		}
+	}
+}
+
 #endif
 
