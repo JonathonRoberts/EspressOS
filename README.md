@@ -4,10 +4,10 @@
 * Hobby x86-64 OS Project
 * Targets and milestones in todo.wiki
 * Currently Compiles in x86-64 OpenBSD 6.2 and Ubuntu LTS 16.04
-* Microkernel -	I don't like having to recompile the entire kernel to just to support something like a new filesystem
+* Microkernel
 * LP64
 * FUGPL license - To avoid restrictions on code going upstream
-
+* Currently, reading cd with int13 allows for a 92kb kernel
 ## Install instructions
 $ ./configure.pl
 

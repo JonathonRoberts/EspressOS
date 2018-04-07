@@ -4,6 +4,7 @@
 	[bits 16]
 	start: jmp boot
 	%include "a20.asm" ; loads but does not execute
+	DriveNumber db 0
 
 ;; Useful functions for debugging
 ;; constant and variable definitions
@@ -133,6 +134,7 @@ Paging:
 boot:
 	cld; Clear direction flag
 
+	mov [DriveNumber], dl
 	;call ClrScr
 	;mov si, msg	; SI points to message
 	;call Print
@@ -152,14 +154,35 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 50 	; Number of sectors to read
+	mov al, 100 	; Number of sectors to read
 	mov ch, 0	; cylinder
 	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number
-	mov dl, 0	; drive number
+	mov dl, [DriveNumber]	; drive number
 
 	mov ah, 0x02	; read sectors from disk into memory
 	int 0x13	; call the BIOS routine
+
+	mov ax, 0xbe0
+	mov es, ax
+
+	mov al, 100 	; Number of sectors to read
+	mov ch, 1	; cylinder
+	mov cl, 0	; sector to start reading at
+
+	mov ah, 0x02	; read sectors from disk into memory
+	int 0x13	; call the BIOS routine
+
+	mov ax, 0xce0
+	mov es, ax
+
+	mov al, 100 	; Number of sectors to read
+	mov ch, 2	; cylinder
+	mov cl, 0	; sector to start reading at
+
+	mov ah, 0x02	; read sectors from disk into memory
+	int 0x13	; call the BIOS routine
+
 
 	;;---
 	;; Long Mode
