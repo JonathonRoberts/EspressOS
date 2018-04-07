@@ -1,5 +1,7 @@
 # EspressOS
 
+![2018-04-07 Screenshot](https://jonrob.net/tmp/Screenshot%202018-04-07.png)
+
 ## Project Notes and Direction
 * Hobby x86-64 OS Project
 * Targets and milestones in todo.wiki
