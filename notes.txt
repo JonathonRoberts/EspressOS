@@ -1,0 +1,8 @@
+OpenBSD Create Fat12 filesystem:
+doas dd if=/dev/zero of=disk.img bs=512 count=2880
+doas vnconfig vnd0 disk.img
+doas newfs_msdos -F 12 -f 1440 /dev/rvnd0c
+doas mount -t msdos /dev/vnd0c /mnt
+
+doas umount /mnt
+doas vnconfig -u vnd0

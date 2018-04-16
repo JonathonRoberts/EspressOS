@@ -5,10 +5,10 @@
 start:
 	jmp boot
 ;	%include "a20.asm" ; loads but does not execute
-	nop
+	;nop
 
 ; DOS 2.0 BPB (21 bytes)
-OEMIdentifier		db 0x45, 0x53, 0x50, 0x52, 0x45, 0x53, 0x53, 0x4f
+OEMIdentifier		db "ESPRESSO"
 BytesPerSector		dw 0x0200
 SectorsPerCluster	db 0x01
 ReservedSectors		dw 0x001
@@ -27,7 +27,7 @@ DriveNumber		db 0x00
 Flags			db 0x0001
 ExtendedBootSig		db 0x29
 OsSectors		dd 0x0064
-SystemIdentifier	db 0x45, 0x53, 0x50, 0x52, 0x45, 0x53, 0x53, 0x4f
+SystemIdentifier	db "ESPRESSO"
 
 
 ;; Useful functions for debugging
@@ -246,10 +246,6 @@ LongMode:
 	jmp [0x7e00 +18h]	; Jump to and execute the loaded sector
 
 ;; Required to boot
-;times 446 -($-$$) db 0
-; False partition table entry required by some BIOS vendors.
-;db 0x80, 0x00, 0x01, 0x00, 0xEB, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
-
 ; Fill rest boot sector with 0's, required to boot from floppy
 times 510 - ($-$$) db 0
 ; Boot signature the bios looks for

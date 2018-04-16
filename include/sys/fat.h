@@ -94,7 +94,7 @@ typedef struct fat_BS
 struct fat_BS bootpartition;
 void init_FAT()
 {
-volatile char *fspointer = (volatile char*) 0x7c01;
+volatile char *fspointer = (volatile char*) 0x7c00;
 	bootpartition.bootjmp[0]=*fspointer++;
 	bootpartition.bootjmp[1]=*fspointer++;
 	bootpartition.bootjmp[2]=*fspointer++;
