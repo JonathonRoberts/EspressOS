@@ -2,9 +2,33 @@
 ; bootloader.s
 ;---
 	[bits 16]
-	start: jmp boot
-	%include "a20.asm" ; loads but does not execute
-	DriveNumber db 0
+start:
+	jmp boot
+;	%include "a20.asm" ; loads but does not execute
+	nop
+
+; DOS 2.0 BPB (21 bytes)
+OEMIdentifier		db 0x45, 0x53, 0x50, 0x52, 0x45, 0x53, 0x53, 0x4f
+BytesPerSector		dw 0x0200
+SectorsPerCluster	db 0x01
+ReservedSectors		dw 0x001
+NoOfFATs		db 0x02
+RootdirEntries		dw 0x00E0
+LogicalSectors		dw 0x0060
+MediaDescriptor		db 0xF0
+SectorsPerFAT		dw 0x0009
+; DOS 3.1 BPB (12 bytes)
+SectorsperTrack		dw 0x0012
+NumberofHeads		dw 0x0001
+HiddenSectors		dd 0x0000
+LargeTotalSectors	dd 0x0000
+; DOS 3.4 BPB (13 bytes)
+DriveNumber		db 0x00
+Flags			db 0x0001
+ExtendedBootSig		db 0x29
+OsSectors		dd 0x0064
+SystemIdentifier	db 0x45, 0x53, 0x50, 0x52, 0x45, 0x53, 0x53, 0x4f
+
 
 ;; Useful functions for debugging
 ;; constant and variable definitions
@@ -193,7 +217,7 @@ boot:
 	mov bl, 2
 	int 15h
 
-	call Test_A20 	; Test for and try to enable A20 line
+	;call Test_A20 	; Test for and try to enable A20 line
 
 	cli; Disable interrupts
 
