@@ -154,7 +154,7 @@ boot:
 	mov es, ax
 	xor bx, bx
 
-	mov al, 100 	; Number of sectors to read
+	mov al, 64 	; Number of sectors to read
 	mov ch, 0	; cylinder
 	mov cl, 2	; sector to start reading at
 	mov dh, 0	; head number
@@ -163,25 +163,25 @@ boot:
 	mov ah, 0x02	; read sectors from disk into memory
 	int 0x13	; call the BIOS routine
 
-	mov ax, 0xbe0
-	mov es, ax
+	;mov ax, 0xbe0
+	;mov es, ax
 
-	mov al, 100 	; Number of sectors to read
-	mov ch, 1	; cylinder
-	mov cl, 0	; sector to start reading at
+	;mov al, 100 	; Number of sectors to read
+	;mov ch, 1	; cylinder
+	;mov cl, 0	; sector to start reading at
 
-	mov ah, 0x02	; read sectors from disk into memory
-	int 0x13	; call the BIOS routine
+	;mov ah, 0x02	; read sectors from disk into memory
+	;int 0x13	; call the BIOS routine
 
-	mov ax, 0xce0
-	mov es, ax
+	;mov ax, 0xce0
+	;mov es, ax
 
-	mov al, 100 	; Number of sectors to read
-	mov ch, 2	; cylinder
-	mov cl, 0	; sector to start reading at
+	;mov al, 100 	; Number of sectors to read
+	;mov ch, 2	; cylinder
+	;mov cl, 0	; sector to start reading at
 
-	mov ah, 0x02	; read sectors from disk into memory
-	int 0x13	; call the BIOS routine
+	;mov ah, 0x02	; read sectors from disk into memory
+	;int 0x13	; call the BIOS routine
 
 
 	;;---
@@ -222,7 +222,11 @@ LongMode:
 	jmp [0x7e00 +18h]	; Jump to and execute the loaded sector
 
 ;; Required to boot
+;times 446 -($-$$) db 0
+; False partition table entry required by some BIOS vendors.
+;db 0x80, 0x00, 0x01, 0x00, 0xEB, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF
+
 ; Fill rest boot sector with 0's, required to boot from floppy
 times 510 - ($-$$) db 0
 ; Boot signature the bios looks for
-
+sign dw 0xAA55

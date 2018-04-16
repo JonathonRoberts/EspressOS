@@ -200,65 +200,65 @@ void init_serial()
    outb(PORT + 4, 0x0B);    // IRQs enabled, RTS/DSR set
 }
 
-int serial_received()
-{
-   return inb(PORT + 5) & 1;
-}
-
-char read_serial()
-{
-   while (serial_received() == 0);
-
-   return inb(PORT);
-}
-
-int is_transmit_empty()
-{
-   return inb(PORT + 5) & 0x20;
-}
-
-void write_serial(char a)
-{
-   while (is_transmit_empty() == 0);
-
-   outb(PORT,a);
-}
-
-void skprint(char *string)
-{
-	char a;
-
-	while((char)*string!=0)
-	{
-		a = *string++;
-		switch(a){
-			case '\t': {
-					if(scx<SERIAL_COLS-TAB_SPACE-1){
-							write_serial(' ');
-							scx++;
-						while(scx%TAB_SPACE){
-							write_serial(' ');
-							scx++;
-						}
-						break;
-					}
-				   }
-			case '\n': {
-					while(++scx<SERIAL_COLS){
-						write_serial(' ');
-					}
-					scx=0;
-					break;
-				   }
-			default :{
-				write_serial(a);
-				if(++scx>=SERIAL_COLS){
-					scx=0;;
-				}
-			}
-		}
-	}
-}
+//int serial_received()
+//{
+//   return inb(PORT + 5) & 1;
+//}
+//
+//char read_serial()
+//{
+//   while (serial_received() == 0);
+//
+//   return inb(PORT);
+//}
+//
+//int is_transmit_empty()
+//{
+//   return inb(PORT + 5) & 0x20;
+//}
+//
+//void write_serial(char a)
+//{
+//   while (is_transmit_empty() == 0);
+//
+//   outb(PORT,a);
+//}
+//
+//void skprint(char *string)
+//{
+//	char a;
+//
+//	while((char)*string!=0)
+//	{
+//		a = *string++;
+//		switch(a){
+//			case '\t': {
+//					if(scx<SERIAL_COLS-TAB_SPACE-1){
+//							write_serial(' ');
+//							scx++;
+//						while(scx%TAB_SPACE){
+//							write_serial(' ');
+//							scx++;
+//						}
+//						break;
+//					}
+//				   }
+//			case '\n': {
+//					while(++scx<SERIAL_COLS){
+//						write_serial(' ');
+//					}
+//					scx=0;
+//					break;
+//				   }
+//			default :{
+//				write_serial(a);
+//				if(++scx>=SERIAL_COLS){
+//					scx=0;;
+//				}
+//			}
+//		}
+//	}
+//}
 
 #endif
 
