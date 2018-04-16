@@ -6,15 +6,17 @@ start:
 	jmp boot
 ;	%include "a20.asm" ; loads but does not execute
 	;nop
-
+; ----
+; VBR
+; ----
 ; DOS 2.0 BPB (21 bytes)
 OEMIdentifier		db "ESPRESSO"
 BytesPerSector		dw 0x0200
 SectorsPerCluster	db 0x01
-ReservedSectors		dw 0x001
-NoOfFATs		db 0x02
-RootdirEntries		dw 0x00E0
-LogicalSectors		dw 0x0060
+ReservedSectorCount	dw 0x001
+TableCount		db 0x02
+RootEntryCount		dw 0x00E0
+TotalSectors		dw 0x0060
 MediaDescriptor		db 0xF0
 SectorsPerFAT		dw 0x0009
 ; DOS 3.1 BPB (12 bytes)
@@ -247,6 +249,21 @@ LongMode:
 
 ;; Required to boot
 ; Fill rest boot sector with 0's, required to boot from floppy
-times 510 - ($-$$) db 0
+; ---
+; MBR
+; ---
+times 494 - ($-$$) db 0
+PartitionTable:
+Partition1:
+	Status			db 0x80		; Bootable=0x80, 0x00=NonBootable
+	CHSFirstHead		db 0x01
+	CHSFirstSector		db 00001000b	; sector bits 5-0, 9-8 of cylinder are 7-6
+	CHSFirstCylinder	db 00000000b
+	PartitionType		db 0x01		; FAT12=0x1, FAT16=0x04/0x06/0x0E, FAT32=0x0B/0x0C
+	CHSLastHead		db 0x01
+	CHSLastSector		db 01001000b	; sector bits 5-0, 9-8 of cylinder are 7-6
+	CHSLastCylinder		db 01010000b
+	LBAofLastSector	 	dd 0x2880
+	TotalBlocksinPartition	dd 0x00
 ; Boot signature the bios looks for
 sign dw 0xAA55

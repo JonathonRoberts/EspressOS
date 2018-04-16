@@ -57,68 +57,136 @@ else
 }
 */
 
-typedef struct fat_extBS_16
-{
-	//extended fat12 and fat16 stuff
-	unsigned char		bios_drive_num;
-	unsigned char		reserved1;
-	unsigned char		boot_signature;
-	unsigned int		volume_id;
-	unsigned char		volume_label[11];
-	unsigned char		fat_type_label[8];
 
-}__attribute__((packed)) fat_extBS_16_t;
+//struct {
+///* General Volume Boot Record */
+//unsigned short bytes_per_sector;
+//unsigned char sectors_per_cluster;
+//unsigned short reserved_sector_count;
+//unsigned char number_of_fats;
+//unsigned short max_root_dir_entries;
+//unsigned short sectors_per_fat;
+//unsigned int root_dir_sector;
+//unsigned char fat_type[8];
+//unsigned short signature;
+//unsigned int fat_base;
+//// What sector does the FATs start at
+//unsigned int data_start_addr;
+//// What address does the data regions start at
+//} fat12;
+//
+//char buffer[512];
+//unsigned char partition1_type;
+//unsigned int partition1_begin_sector;
+//unsigned int global_offset;
+//
+///* read MBR */
+//seek_from_start(0);
+//read_from_io(buffer, 1, 512);
+//partition1_begin_sector = load_int((buffer+446+8));
+//global_offset = partition1_begin_sector*512;
+//
+///* read VBR into buffer */
+//seek_from_start(global_offset);
+//read_from_io(buffer, 1, 512);
+//
+///* VBR: volume boot record */
+//fat12.bytes_per_sector = load_short(buffer+0x0b);
+//fat12.sectors_per_cluster = buffer[0x0d];
+//fat12.reserved_sector_count = load_short(buffer+0x0e);
+//fat12.number_of_fats = buffer[0x10];
+//fat12.max_root_dir_entries = load_short(buffer+0x11);
+//fat12.sectors_per_fat = load_short(buffer+0x16);
+//fat12.signature = load_short(buffer+0x1fe);
+///* At what sector does the fat table begin? */
+//fat12.fat_base = partition1_begin_sector + fat12.reserved_sector_count;
+///* At what sector does the root directory start at? */
+//fat12.root_dir_sector = fat12.fat_base + fat12.sectors_per_fat*fat12.number_of_fats;
+///* At what address does the data region start at? */
+//fat12.data_start_addr = fat12.root_dir_sector*fat12.bytes_per_sector +
+//fat12.max_root_dir_entries*32;
 
 typedef struct fat_BS
 {
-	unsigned char 		bootjmp[3];
-	unsigned char 		oem_name[8];
-	unsigned short 	        bytes_per_sector;
-	unsigned char		sectors_per_cluster;
-	unsigned short		reserved_sector_count;
-	unsigned char		table_count;
-	unsigned short		root_entry_count;
-	unsigned short		total_sectors_16;
-	unsigned char		media_type;
-	unsigned short		table_size_16;
-	unsigned short		sectors_per_track;
-	unsigned short		head_side_count;
-	unsigned int 		hidden_sector_count;
-	unsigned int 		total_sectors_32;
-
-	//this will be cast to it's specific type once the driver actually knows what type of FAT this is.
-	unsigned char		extended_section[54];
+	uint8_t 	bootjmp[3];
+	uint8_t 	oem_name[8];
+	uint16_t        bytes_per_sector;
+	uint8_t		sectors_per_cluster;
+	uint16_t	reserved_sector_count;
+	uint8_t		table_count;
+	uint16_t	root_entry_count;
+	uint16_t	total_sectors_16;
+	uint8_t		media_type;
+	uint16_t	table_size_16;
+	uint16_t	sectors_per_track;
+	uint16_t	head_side_count;
+	uint32_t	hidden_sector_count;
+	uint32_t	total_sectors_32;
+	//extended fat12 and fat16 stuff
+	uint8_t		bios_drive_num;
+	uint8_t		flag;
+	uint8_t		boot_signature;
+	uint32_t	volume_id;
+	uint8_t		fat_type_label[8];
 
 }__attribute__((packed)) fat_BS_t;
 
 struct fat_BS bootpartition;
+
 void init_FAT()
 {
-volatile char *fspointer = (volatile char*) 0x7c00;
-	bootpartition.bootjmp[0]=*fspointer++;
-	bootpartition.bootjmp[1]=*fspointer++;
-	bootpartition.bootjmp[2]=*fspointer++;
-	bootpartition.oem_name[0]=*fspointer++;
-	bootpartition.oem_name[1]=*fspointer++;
-	bootpartition.oem_name[2]=*fspointer++;
-	bootpartition.oem_name[3]=*fspointer++;
-	bootpartition.oem_name[4]=*fspointer++;
-	bootpartition.oem_name[5]=*fspointer++;
-	bootpartition.oem_name[6]=*fspointer++;
-	bootpartition.oem_name[7]=*fspointer++;
-	bootpartition.bytes_per_sector=*fspointer++;
-	bootpartition.sectors_per_cluster=*fspointer++;
-	bootpartition.reserved_sector_count=*fspointer++;
-	bootpartition.table_count=*fspointer++;
-	bootpartition.root_entry_count=*fspointer++;
-	bootpartition.total_sectors_16=*fspointer++;
-	bootpartition.media_type=*fspointer++;
-	bootpartition.table_size_16=*fspointer++;
-	bootpartition.sectors_per_track=*fspointer++;
-	bootpartition.head_side_count=*fspointer++;
-	bootpartition.hidden_sector_count=*fspointer++;
-	bootpartition.total_sectors_32=*fspointer++;
-return;
+volatile uint8_t *fspointer8 = (volatile uint8_t*) 0x7c00;
+volatile uint16_t *fspointer16;
+volatile uint32_t *fspointer32;
+	bootpartition.bootjmp[0]=*fspointer8++;
+	bootpartition.bootjmp[1]=*fspointer8++;
+	bootpartition.bootjmp[2]=*fspointer8++;
+	bootpartition.oem_name[0]=*fspointer8++;
+	bootpartition.oem_name[1]=*fspointer8++;
+	bootpartition.oem_name[2]=*fspointer8++;
+	bootpartition.oem_name[3]=*fspointer8++;
+	bootpartition.oem_name[4]=*fspointer8++;
+	bootpartition.oem_name[5]=*fspointer8++;
+	bootpartition.oem_name[6]=*fspointer8++;
+	bootpartition.oem_name[7]=*fspointer8++;
+	fspointer16 = (volatile uint16_t*) fspointer8;
+	fspointer8+=2;
+	bootpartition.bytes_per_sector=*fspointer16;
+	bootpartition.sectors_per_cluster=*fspointer8++;
+	fspointer16 = (volatile uint16_t*) fspointer8;
+	fspointer8+=2;
+	bootpartition.reserved_sector_count=*fspointer16++;
+	bootpartition.table_count=*fspointer8++;
+	fspointer16 = (volatile uint16_t*) fspointer8;
+	fspointer8+=4;
+	bootpartition.root_entry_count=*fspointer16++;
+	bootpartition.total_sectors_16=*fspointer16;
+	bootpartition.media_type=*fspointer8++;
+	fspointer16 = (volatile uint16_t*) fspointer8;
+	fspointer8+=6;
+	bootpartition.table_size_16=*fspointer16++;
+	bootpartition.sectors_per_track=*fspointer16++;
+	bootpartition.head_side_count=*fspointer16++;
+	fspointer32 = (volatile uint32_t*) fspointer8;
+	fspointer8+=8;
+	bootpartition.hidden_sector_count=*fspointer32++;
+	bootpartition.total_sectors_32=*fspointer32;
+	bootpartition.bios_drive_num=*fspointer8++;
+	bootpartition.flag=*fspointer8++;
+	bootpartition.boot_signature=*fspointer8++;
+	fspointer32 = (volatile uint32_t*) fspointer8;
+	fspointer8+=4;
+	bootpartition.volume_id=*fspointer32;
+	bootpartition.fat_type_label[0]=*fspointer8++;
+	bootpartition.fat_type_label[1]=*fspointer8++;
+	bootpartition.fat_type_label[2]=*fspointer8++;
+	bootpartition.fat_type_label[3]=*fspointer8++;
+	bootpartition.fat_type_label[4]=*fspointer8++;
+	bootpartition.fat_type_label[5]=*fspointer8++;
+	bootpartition.fat_type_label[6]=*fspointer8++;
+	bootpartition.fat_type_label[7]=*fspointer8++;
+
+	return;
 }
 #endif
 
