@@ -106,85 +106,115 @@ else
 //fat12.data_start_addr = fat12.root_dir_sector*fat12.bytes_per_sector +
 //fat12.max_root_dir_entries*32;
 
-typedef struct fat_BS
+typedef struct fat16_vbr
 {
 	uint8_t 	bootjmp[3];
-	uint8_t 	oem_name[8];
-	uint16_t        bytes_per_sector;
-	uint8_t		sectors_per_cluster;
-	uint16_t	reserved_sector_count;
-	uint8_t		table_count;
-	uint16_t	root_entry_count;
-	uint16_t	total_sectors_16;
-	uint8_t		media_type;
-	uint16_t	table_size_16;
-	uint16_t	sectors_per_track;
-	uint16_t	head_side_count;
-	uint32_t	hidden_sector_count;
-	uint32_t	total_sectors_32;
+	uint8_t 	OEMIdentifier[8];
+	uint16_t        BytesPerSector;
+	uint8_t		SectorsPerCluster;
+	uint16_t	ReservedSectorCount;
+	uint8_t		TableCount;
+	uint16_t	RootEntryCount;
+	uint16_t	TotalSectors16;
+	uint8_t		MediaDescriptor;
+	uint16_t	SectorsPerFAT16;
+	uint16_t	SectorsPerTrack;
+	uint16_t	NumberofHeads;
+	uint32_t	HiddenSectors;
+	uint32_t	LargeTotalSectors32;
 	//extended fat12 and fat16 stuff
-	uint8_t		bios_drive_num;
-	uint8_t		flag;
-	uint8_t		boot_signature;
-	uint32_t	volume_id;
-	uint8_t		fat_type_label[8];
+	uint8_t		DriveNumber;
+	uint8_t		Reserved1;
+	uint8_t		ExtendedBootSig;
+	uint32_t	OSSectors;
+	uint8_t		SystemIdentifier[8];
 
-}__attribute__((packed)) fat_BS_t;
+}__attribute__((packed)) fat16_vbr_t;
 
-struct fat_BS bootpartition;
+typedef struct fat16_mbr
+{
+	uint8_t 	Status;
+	uint8_t 	CHSFirstHead;
+	uint8_t		CHSFirstSector;
+	uint8_t		CHSFirstCylinder;
+	uint8_t		PartitionType;
+	uint8_t 	CHSLastHead;
+	uint8_t		CHSLastSector;
+	uint8_t		CHSLastCylinder;
+	uint32_t	LBAofLastSector;
+	uint32_t	TotalBlocksinPartition;
+
+}__attribute__((packed)) fat16_mbr_t;
+
+struct fat16_vbr VBR;
+struct fat16_mbr Partition1;
 
 void init_FAT()
 {
 volatile uint8_t *fspointer8 = (volatile uint8_t*) 0x7c00;
 volatile uint16_t *fspointer16;
 volatile uint32_t *fspointer32;
-	bootpartition.bootjmp[0]=*fspointer8++;
-	bootpartition.bootjmp[1]=*fspointer8++;
-	bootpartition.bootjmp[2]=*fspointer8++;
-	bootpartition.oem_name[0]=*fspointer8++;
-	bootpartition.oem_name[1]=*fspointer8++;
-	bootpartition.oem_name[2]=*fspointer8++;
-	bootpartition.oem_name[3]=*fspointer8++;
-	bootpartition.oem_name[4]=*fspointer8++;
-	bootpartition.oem_name[5]=*fspointer8++;
-	bootpartition.oem_name[6]=*fspointer8++;
-	bootpartition.oem_name[7]=*fspointer8++;
+	VBR.bootjmp[0]=*fspointer8++;
+	VBR.bootjmp[1]=*fspointer8++;
+	VBR.bootjmp[2]=*fspointer8++;
+	VBR.OEMIdentifier[0]=*fspointer8++;
+	VBR.OEMIdentifier[1]=*fspointer8++;
+	VBR.OEMIdentifier[2]=*fspointer8++;
+	VBR.OEMIdentifier[3]=*fspointer8++;
+	VBR.OEMIdentifier[4]=*fspointer8++;
+	VBR.OEMIdentifier[5]=*fspointer8++;
+	VBR.OEMIdentifier[6]=*fspointer8++;
+	VBR.OEMIdentifier[7]=*fspointer8++;
 	fspointer16 = (volatile uint16_t*) fspointer8;
 	fspointer8+=2;
-	bootpartition.bytes_per_sector=*fspointer16;
-	bootpartition.sectors_per_cluster=*fspointer8++;
+	VBR.BytesPerSector=*fspointer16;
+	VBR.SectorsPerCluster=*fspointer8++;
 	fspointer16 = (volatile uint16_t*) fspointer8;
 	fspointer8+=2;
-	bootpartition.reserved_sector_count=*fspointer16++;
-	bootpartition.table_count=*fspointer8++;
+	VBR.ReservedSectorCount=*fspointer16++;
+	VBR.TableCount=*fspointer8++;
 	fspointer16 = (volatile uint16_t*) fspointer8;
 	fspointer8+=4;
-	bootpartition.root_entry_count=*fspointer16++;
-	bootpartition.total_sectors_16=*fspointer16;
-	bootpartition.media_type=*fspointer8++;
+	VBR.RootEntryCount=*fspointer16++;
+	VBR.TotalSectors16=*fspointer16;
+	VBR.MediaDescriptor=*fspointer8++;
 	fspointer16 = (volatile uint16_t*) fspointer8;
 	fspointer8+=6;
-	bootpartition.table_size_16=*fspointer16++;
-	bootpartition.sectors_per_track=*fspointer16++;
-	bootpartition.head_side_count=*fspointer16++;
+	VBR.SectorsPerFAT16=*fspointer16++;
+	VBR.SectorsPerTrack=*fspointer16++;
+	VBR.NumberofHeads=*fspointer16++;
 	fspointer32 = (volatile uint32_t*) fspointer8;
 	fspointer8+=8;
-	bootpartition.hidden_sector_count=*fspointer32++;
-	bootpartition.total_sectors_32=*fspointer32;
-	bootpartition.bios_drive_num=*fspointer8++;
-	bootpartition.flag=*fspointer8++;
-	bootpartition.boot_signature=*fspointer8++;
+	VBR.HiddenSectors=*fspointer32++;
+	VBR.LargeTotalSectors32=*fspointer32;
+	VBR.DriveNumber=*fspointer8++;
+	VBR.Reserved1=*fspointer8++;
+	VBR.ExtendedBootSig=*fspointer8++;
 	fspointer32 = (volatile uint32_t*) fspointer8;
 	fspointer8+=4;
-	bootpartition.volume_id=*fspointer32;
-	bootpartition.fat_type_label[0]=*fspointer8++;
-	bootpartition.fat_type_label[1]=*fspointer8++;
-	bootpartition.fat_type_label[2]=*fspointer8++;
-	bootpartition.fat_type_label[3]=*fspointer8++;
-	bootpartition.fat_type_label[4]=*fspointer8++;
-	bootpartition.fat_type_label[5]=*fspointer8++;
-	bootpartition.fat_type_label[6]=*fspointer8++;
-	bootpartition.fat_type_label[7]=*fspointer8++;
+	VBR.OSSectors=*fspointer32;
+	VBR.SystemIdentifier[0]=*fspointer8++;
+	VBR.SystemIdentifier[1]=*fspointer8++;
+	VBR.SystemIdentifier[2]=*fspointer8++;
+	VBR.SystemIdentifier[3]=*fspointer8++;
+	VBR.SystemIdentifier[4]=*fspointer8++;
+	VBR.SystemIdentifier[5]=*fspointer8++;
+	VBR.SystemIdentifier[6]=*fspointer8++;
+	VBR.SystemIdentifier[7]=*fspointer8++;
+
+	//fspointer8=0x7de8;
+
+	Partition1.Status = *fspointer8++;
+	Partition1.CHSFirstHead = *fspointer8++;
+	Partition1.CHSFirstSector = *fspointer8++;
+	Partition1.CHSFirstCylinder = *fspointer8++;
+	Partition1.PartitionType = *fspointer8++;
+	Partition1.CHSLastHead = *fspointer8++;
+	Partition1.CHSLastSector = *fspointer8++;
+	Partition1.CHSLastCylinder = *fspointer8++;
+	fspointer32 = (volatile uint32_t*) fspointer8;
+	Partition1.LBAofLastSector = *fspointer32++;
+	Partition1.TotalBlocksinPartition = *fspointer32++;
 
 	return;
 }

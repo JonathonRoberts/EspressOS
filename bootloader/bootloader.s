@@ -16,20 +16,20 @@ SectorsPerCluster	db 0x01
 ReservedSectorCount	dw 0x001
 TableCount		db 0x02
 RootEntryCount		dw 0x00E0
-TotalSectors		dw 0x0060
+TotalSectors16		dw 0x0060
 MediaDescriptor		db 0xF0
-SectorsPerFAT		dw 0x0009
+SectorsPerFAT16		dw 0x0009
 ; DOS 3.1 BPB (12 bytes)
-SectorsperTrack		dw 0x0012
+SectorsPerTrack		dw 0x0012
 NumberofHeads		dw 0x0001
 HiddenSectors		dd 0x0000
-LargeTotalSectors	dd 0x0000
-; DOS 3.4 BPB (13 bytes)
+LargeTotalSectors32	dd 0x0000
+; DOS 3.4 BPB (15 bytes)
 DriveNumber		db 0x00
-Flags			db 0x0001
+Reserved1		db 0x00
 ExtendedBootSig		db 0x29
-OsSectors		dd 0x0064
-SystemIdentifier	db "ESPRESSO"
+OSSectors		dd 0x0064
+SystemIdentifier	db "FAT12   "
 
 
 ;; Useful functions for debugging
@@ -255,6 +255,10 @@ LongMode:
 times 494 - ($-$$) db 0
 PartitionTable:
 Partition1:
+; FAT1 0x0200 - 0x13FF
+; FAT2 0x1400 - 0x25FF
+; Data 0x2600 - 0x00167FFF
+; Total Blocks 	0x001658FF
 	Status			db 0x80		; Bootable=0x80, 0x00=NonBootable
 	CHSFirstHead		db 0x01
 	CHSFirstSector		db 00001000b	; sector bits 5-0, 9-8 of cylinder are 7-6
@@ -263,7 +267,7 @@ Partition1:
 	CHSLastHead		db 0x01
 	CHSLastSector		db 01001000b	; sector bits 5-0, 9-8 of cylinder are 7-6
 	CHSLastCylinder		db 01010000b
-	LBAofLastSector	 	dd 0x2880
-	TotalBlocksinPartition	dd 0x00
+	LBAofLastSector	 	dd 0x00167FFF
+	TotalBlocksinPartition	dd 0xFF591600
 ; Boot signature the bios looks for
 sign dw 0xAA55

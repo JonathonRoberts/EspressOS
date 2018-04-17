@@ -13,7 +13,7 @@ int main()
 	//disable_cursor();
 	//init_IDT();
 	init_FAT();
-	//kclearscreen();
+	kclearscreen();
 	/*
 	sponge();
 	__asm__("int3");
