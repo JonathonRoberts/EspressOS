@@ -31,7 +31,6 @@ ExtendedBootSig		db 0x29
 OSSectors		dd 0x0064
 SystemIdentifier	db "FAT12   "
 
-
 ;; Useful functions for debugging
 ;; constant and variable definitions
 ;_CurX db 0
@@ -254,11 +253,18 @@ LongMode:
 ; ---
 times 494 - ($-$$) db 0
 PartitionTable:
+;	+-------+	0x0	 |
+;	|Bootsec|		 |
+;	+-------+	0x200	 |512
+;	| FAT1	| 		 |
+;	+-------+	0x1400	 |5120
+;	| FAT2	| 		 |
+;	+-------+	0x2600	 |9728
+;	|RootDir|		 |
+;	+-------+	0x4200	 |1896
+;	| Data	| 		 |
+;	+-------+	0x0168000|1464576
 Partition1:
-; FAT1 0x0200 - 0x13FF
-; FAT2 0x1400 - 0x25FF
-; Data 0x2600 - 0x00167FFF
-; Total Blocks 	0x001658FF
 	Status			db 0x80		; Bootable=0x80, 0x00=NonBootable
 	CHSFirstHead		db 0x01
 	CHSFirstSector		db 00001000b	; sector bits 5-0, 9-8 of cylinder are 7-6
@@ -269,5 +275,6 @@ Partition1:
 	CHSLastCylinder		db 01010000b
 	LBAofLastSector	 	dd 0x00167FFF
 	TotalBlocksinPartition	dd 0xFF591600
+
 ; Boot signature the bios looks for
 sign dw 0xAA55
