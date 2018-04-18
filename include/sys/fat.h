@@ -146,6 +146,17 @@ typedef struct fat16_mbr
 
 }__attribute__((packed)) fat16_mbr_t;
 
+typedef struct fat16_dir
+{
+	uint8_t 	Filename[8];
+	uint8_t 	Extention[3];
+	uint16_t 	Attributes;
+	uint8_t		RESERVED[10];
+	uint8_t		Time[4];
+	uint16_t	StartingCluster;
+	uint8_t 	Filesize;
+}__attribute__((packed)) fat16_dir_t;
+
 struct fat16_vbr VBR;
 struct fat16_mbr Partition1;
 
