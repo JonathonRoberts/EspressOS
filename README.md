@@ -9,7 +9,7 @@
 * Microkernel
 * LP64
 * FUGPL license - To avoid restrictions on code going upstream
-* Currently, reading cd with int13 allows for a 92kb kernel
+* Can boot from hard drives, floppy drives, and CDs
 ## Install instructions
 $ ./configure.pl
 

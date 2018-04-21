@@ -35,13 +35,13 @@ hd: bootloader kernel
 
 qemu-gdb:
 	$(QEMU)  -cdrom $(DISK_IMG) -gdb tcp::26000 -S
-#qemu:
-#	$(QEMU) -cdrom $(DISK_IMG)
+qemu:
+	$(QEMU) -cdrom $(DISK_IMG)
 qemuf-gdb:
 	$(QEMU) -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
 qemuf:
 	$(QEMU) -fda $(FLOPPY_IMG)
-qemu:
+qemuh:
 	$(QEMU) -hda $(FLOPPY_IMG)
 qemuhd:
 	doas $(QEMU) -hda /dev/wd0c
