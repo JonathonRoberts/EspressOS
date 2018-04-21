@@ -24,15 +24,27 @@ bootdisk: bootloader kernel
 cdrom:
 	cp $(FLOPPY_IMG) $(BUILD_DIR)/tmp
 	mkisofs -o $(DISK_IMG) -V EspressOS -b $(FLOPPY_IMG) $(BUILD_DIR)/tmp
+hd: bootloader kernel
+	doas dd if=/dev/zero of=disk.img bs=512 count=2880
+	doas vnconfig vnd0 disk.img
+	doas newfs_msdos -a 9 -b 512 -c 1 -e 224 -f 2880 -h 1 -I 100 -L ESPRESSO -m 240 -n 2 -O ESPRESSO -o 0 -r 1 -S 512 -u 18 /dev/rvnd0c
+	dd conv=notrunc if=build/bootloader/bootloader.o of=disk.img bs=512 count=1 seek=0
+	dd conv=notrunc if=build/kernel/kernel.bin of=disk.img bs=512 count=`du build/kernel/kernel.bin|cut -f1` seek=1
+	doas dd conv=notrunc if=disk.img of=/dev/wd0c bs=512 seek=0
+	doas vnconfig -u vnd0
 
 qemu-gdb:
 	$(QEMU)  -cdrom $(DISK_IMG) -gdb tcp::26000 -S
-qemu:
-	$(QEMU) -cdrom $(DISK_IMG)
+#qemu:
+#	$(QEMU) -cdrom $(DISK_IMG)
 qemuf-gdb:
 	$(QEMU) -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
 qemuf:
 	$(QEMU) -fda $(FLOPPY_IMG)
+qemu:
+	$(QEMU) -hda $(FLOPPY_IMG)
+qemuhd:
+	doas $(QEMU) -hda /dev/wd0c
 
 #serial:
 #	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -serial "pty" -nographic

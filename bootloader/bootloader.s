@@ -31,6 +31,17 @@ ExtendedBootSig		db 0x29
 OSSectors		dd 0x0064
 SystemIdentifier	db "FAT12   "
 
+;DAP:
+;        DAP.PacketSize      db              0x10                    ; size of command packet
+;        DAP.Reserved        db              0x00                    ; reserved
+;        DAP.Sectors         db              0x01                    ; Sectors to transfer
+;        DAP.BuffererOffset  db              0x00                    ; Target buffer, offset
+;        DAP.StartingBlockL  dw              0x7E00		     ; Target buffer segment, lower
+;        DAP.StartingBlockH  dw              0x0000                  ; Target buffer segment, higher
+;        DAP.LBASectorL      dd              0x00000000              ; LBA Sector, lower
+;        DAP.LBASectorH      dd              0x00000002              ; LBA Sector, higher
+
+
 ;; Useful functions for debugging
 ;; constant and variable definitions
 ;_CurX db 0
@@ -156,57 +167,100 @@ Paging:
 
 	ret
 
+
+DriveParams:
+	maxheads	db	0x0
+	nosectors	db	0x0
+
 boot:
 	cld; Clear direction flag
+	; Setup the stack
+	mov ax, cs
+	mov ss, ax
+	mov sp, 0x7c00
+	; Setup the data segment
+	mov ds, ax
+	xor ax, ax
+	mov ds, ax
+	mov es, ax
+
 
 	mov [DriveNumber], dl
-	;call ClrScr
-	;mov si, msg	; SI points to message
-	;call Print
+
+	;;---
+	;; Read Disk
+	;;---
+        ; Test for extended read
+;        mov ah, 0x41
+;        mov bx, 0x55AA
+;        mov dl, [DriveNumber]
+;        int 13
+;
+;        cmp     bx, 0xAA55      ; Check that bl, bh exchanged
+;        jne     CHS_Read        ; If not, don't have EDD extensions
+;        test    cl, 0x01        ; And do we have "read" available?
+;        jz      CHS_Read        ; Again, use CHS if not
+;LBA_Read:
+;
+;LBA_Read.Retry:
+;        xor ah,ah                       ;INT 13h AH=00h: Reset Disk Drive
+;        int 0x13                        ;Reset Disk
+;
+;	 lea si, [DAP.PacketSize]
+;        mov ah, 0x42
+;        int 0x13
+;	 jc LBA_Read.Retry
+;
+;        jmp Long_Mode
+
+CHS_Read:
+CHS_Read.Retry:
+        xor ah,ah	;INT 13h AH=00h: Reset Disk Drive
+        int 0x13	;Reset Disk
+
+        mov ax, 0x7e0
+        mov es, ax
+        xor bx, bx
+
+        mov al, 60      ; Number of sectors to read
+        mov ch, 0       ; cylinder
+        mov cl, 2       ; sector to start reading at
+        mov dh, 0       ; head number
+        mov dl, [DriveNumber]   ; drive number
+
+        mov ah, 0x02     ; read sectors from disk into memory
+        int 0x13        ; call the BIOS routine
+        jc CHS_Read.Retry
+
+        ;mov ax, 0xbe0
+        ;mov es, ax
+
+        ;mov al, 100    ; Number of sectors to read
+        ;mov ch, 1      ; cylinder
+        ;mov cl, 0      ; sector to start reading at
+
+        ;mov ah, 0x02   ; read sectors from disk into memory
+        ;int 0x13       ; call the BIOS routine
+
+        ;mov ax, 0xce0
+        ;mov es, ax
+
+        ;mov al, 100    ; Number of sectors to read
+        ;mov ch, 2      ; cylinder
+        ;mov cl, 0      ; sector to start reading at
+
+        ;mov ah, 0x02   ; read sectors from disk into memory
+        ;int 0x13       ; call the BIOS routine
+
+
+Long_Mode:
 
 	; set video mode
 	mov ah, 0x00; teletype output
 	mov al, 0x03; vga 3
+	;mov al, 0x31; vga 3
 	mov bh, 0 ; page number (0..7)
 	int 10h
-
-	;;---
-	;; Read more sectors
-	;;---
-
-	; Start loading at data buffer es:bx = 0x7e00
-	mov ax, 0x7e0
-	mov es, ax
-	xor bx, bx
-
-	mov al, 64 	; Number of sectors to read
-	mov ch, 0	; cylinder
-	mov cl, 2	; sector to start reading at
-	mov dh, 0	; head number
-	mov dl, [DriveNumber]	; drive number
-
-	mov ah, 0x02	; read sectors from disk into memory
-	int 0x13	; call the BIOS routine
-
-	;mov ax, 0xbe0
-	;mov es, ax
-
-	;mov al, 100 	; Number of sectors to read
-	;mov ch, 1	; cylinder
-	;mov cl, 0	; sector to start reading at
-
-	;mov ah, 0x02	; read sectors from disk into memory
-	;int 0x13	; call the BIOS routine
-
-	;mov ax, 0xce0
-	;mov es, ax
-
-	;mov al, 100 	; Number of sectors to read
-	;mov ch, 2	; cylinder
-	;mov cl, 0	; sector to start reading at
-
-	;mov ah, 0x02	; read sectors from disk into memory
-	;int 0x13	; call the BIOS routine
 
 
 	;;---
@@ -238,11 +292,11 @@ LongMode:
 
 	;; Long Mode printing
 	;;VID_MEM equ 0xb8000
-	;mov edi, 0xb8000
-	;mov rax, 0x1f201f201f201f20 ;blue bg, space
-	;mov ecx, 501
-	;rep stosq
-	mov esp, 0x7e00		; move stack pointer
+;	mov edi, 0xb8000
+;	mov rax, 0x1f201f201f201f20 ;blue bg, space
+;	mov ecx, 501
+;	rep stosq
+;	mov esp, 0x7e00		; move stack pointer
 
 	jmp [0x7e00 +18h]	; Jump to and execute the loaded sector
 
