@@ -4,7 +4,6 @@
 	[bits 16]
 start:
 	jmp boot
-;	%include "a20.asm" ; loads but does not execute
 	;nop
 ; ----
 ; VBR
@@ -173,24 +172,30 @@ DriveParams:
 	nosectors	db	0x0
 
 boot:
+; We don't need to disable and re-enable interrupts around the
+; the load of ss and sp.
+;
+; "A MOV into SS inhibits all interrupts until after the execution
+; of the next instruction (which is presumably a MOV into eSP)"
+
 	cld; Clear direction flag
 	; Setup the stack
 	mov ax, cs
 	mov ss, ax
 	mov sp, 0x7c00
 	; Setup the data segment
-	mov ds, ax
 	xor ax, ax
 	mov ds, ax
 	mov es, ax
 
-
+	; DriveNumber is provided by BIOS
 	mov [DriveNumber], dl
 
-	;;---
-	;; Read Disk
-	;;---
+;;---
+;; Read Disk
+;;---
         ; Test for extended read
+;; LBA_Read is untested
 ;        mov ah, 0x41
 ;        mov bx, 0x55AA
 ;        mov dl, [DriveNumber]
@@ -228,10 +233,11 @@ CHS_Read.Retry:
         mov dh, 0       ; head number
         mov dl, [DriveNumber]   ; drive number
 
-        mov ah, 0x02     ; read sectors from disk into memory
+        mov ah, 0x02    ; read sectors from disk into memory
         int 0x13        ; call the BIOS routine
         jc CHS_Read.Retry
 
+	;; For loading more sectors the below worked  as a short term solution
         ;mov ax, 0xbe0
         ;mov es, ax
 
@@ -258,21 +264,22 @@ Long_Mode:
 	; set video mode
 	mov ah, 0x00; teletype output
 	mov al, 0x03; vga 3
-	;mov al, 0x31; vga 3
 	mov bh, 0 ; page number (0..7)
 	int 10h
 
-
-	;;---
-	;; Long Mode
-	;;---
+;;---
+;; Long Mode
+;;---
 
 	; Notify BIOS we are going into Long mode
 	mov ax, 0xEC00
 	mov bl, 2
 	int 15h
 
-	;call Test_A20 	; Test for and try to enable A20 line
+	;Fast A20
+	in al, 0x92
+	or al, 0x2
+	out 0x92, al
 
 	cli; Disable interrupts
 
@@ -300,12 +307,12 @@ LongMode:
 
 	jmp [0x7e00 +18h]	; Jump to and execute the loaded sector
 
-;; Required to boot
 ; Fill rest boot sector with 0's, required to boot from floppy
+times 494 - ($-$$) db 0
+
 ; ---
 ; MBR
 ; ---
-times 494 - ($-$$) db 0
 PartitionTable:
 ;Sectors+-------+ - 0x0
 ;     1	|Bootsec|
@@ -330,5 +337,6 @@ Partition1:
 	LBAofLastSector	 	dd 0x00167FFF
 	TotalBlocksinPartition	dd 0xFF591600
 
+;; Required to boot
 ; Boot signature the bios looks for
 sign dw 0xAA55

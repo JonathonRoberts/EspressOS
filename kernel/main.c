@@ -14,6 +14,7 @@ int main()
 	init_IDT();
 //	init_FAT();
 	kclearscreen();
+
 	/*
 	sponge();
 	__asm__("int3");
