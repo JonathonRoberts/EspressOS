@@ -32,7 +32,7 @@ hd: bootloader kernel
 	dd conv=notrunc if=build/bootloader/bootloader.o of=disk.img bs=512 count=1 seek=0
 	dd conv=notrunc if=build/kernel/kernel.bin of=disk.img bs=512 count=`du build/kernel/kernel.bin|cut -f1` seek=1
 	doas mount -t msdos /dev/vnd0c build/tmp
-	doas touch build/tmp/TEST
+	doas touch build/tmp/TEST.TXT
 	doas umount build/tmp
 	doas vnconfig -u vnd0
 	doas dd conv=notrunc if=disk.img of=/dev/wd0c bs=512 seek=0
@@ -51,11 +51,13 @@ qemuhd:
 	doas $(QEMU) -hda /dev/wd0c
 
 #serial:
-#	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -serial "pty" -nographic
+#	$(QEMU) -machine q35 -cdrom $(DISK_IMG) -serial "pty" -nographic
 #connect:
 #	doas cu -s 38400 -l /dev/ttyp9
 serial:
-	qemu-system-x86_64 -machine q35 -cdrom $(DISK_IMG) -nographic $(DEBUG_EXIT)
+	$(QEMU) -hda $(FLOPPY_IMG) -nographic
+serial-gdb:
+	$(QEMU) -hda $(FLOPPY_IMG) -nographic -gdb tcp::26000 -S
 
 clean:
 	make -C bootloader clean

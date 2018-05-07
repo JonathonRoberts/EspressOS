@@ -33,35 +33,6 @@
 #ifndef _FAT_H_
 #include "fat.h"
 #endif
-void kputs( uint8_t colour, const char a )
-{
-        volatile char *video = (volatile char*)VIDEO_MEM+(cy*VIDEO_COLS +cx++)*2;
-        if(a == '\n'){
-                cx=VIDEO_COLS;
-        }
-        else if(a == '\t'){
-                if(cx<VIDEO_COLS-TAB_SPACE){
-                        do {
-                                *video++;
-                                *video++ = colour;
-                        }while(cx++%TAB_SPACE);
-                        cx--;
-                }
-                else{
-                        cx=VIDEO_COLS;
-                }
-        }
-        else{
-                *video++ = a;
-                *video++ = colour;
-        }
-        if(cx == VIDEO_COLS){
-                cx = 0;
-                cy++;
-                if(cy==VIDEO_ROWS){
-                }
-        }
-}
 
 
 void init_FAT();
@@ -195,7 +166,7 @@ typedef struct fat16_dir
 
 struct fat16_vbr VBR;
 struct fat16_mbr Partition1;
-struct fat16_dir Filetree[512];
+struct fat16_dir Filetree[812];
 
 void init_FAT()
 {
@@ -265,34 +236,59 @@ volatile uint32_t *fspointer32;
 	Partition1.TotalBlocksinPartition = *fspointer32++;
 
 	int i=0;
-	fspointer8 = (volatile uint8_t*) 0x100000;
-	//for(i=0;i<1;i++){
-	Filetree[0].Filename[0] = *fspointer8++;
-	Filetree[0].Filename[1] = *fspointer8++;
-	Filetree[0].Filename[2] = *fspointer8++;
-	Filetree[0].Filename[3] = *fspointer8++;
-	Filetree[0].Filename[4] = *fspointer8++;
-	Filetree[0].Filename[5] = *fspointer8++;
-	Filetree[0].Filename[6] = *fspointer8++;
-	Filetree[0].Filename[7] = *fspointer8++;
-	Filetree[0].Extention[0] = *fspointer8++;
-	Filetree[0].Extention[1] = *fspointer8++;
-	Filetree[0].Extention[2] = *fspointer8++;
-	Filetree[0].Attributes = *fspointer8++;
-	Filetree[0].RESERVED = *fspointer8++;
-	Filetree[0].CreateTimeTenth = *fspointer8++;
-	fspointer16 = (volatile uint16_t*) fspointer8;
-	Filetree[0].CreateTime = *fspointer16++;
-	Filetree[0].CreateDate = *fspointer16++;
-	Filetree[0].LastAccDate = *fspointer16++;
-	Filetree[0].StartingCluster = *fspointer16++;
-	Filetree[0].LastWrtTime = *fspointer16++;
-	Filetree[0].LastWrtDate = *fspointer16++;
-	Filetree[0].FirstCluster = *fspointer16++;
-	fspointer32 = (volatile uint32_t*) fspointer16;
-	Filetree[0].Filesize = *fspointer16++;
+	fspointer32 = (volatile uint32_t*) 0x100000;
+	for (i=0;i<812;i++){
+		fspointer8 = (volatile uint8_t*)fspointer32;
+		Filetree[i].Filename[0] = *fspointer8++;
+		Filetree[i].Filename[1] = *fspointer8++;
+		Filetree[i].Filename[2] = *fspointer8++;
+		Filetree[i].Filename[3] = *fspointer8++;
+		Filetree[i].Filename[4] = *fspointer8++;
+		Filetree[i].Filename[5] = *fspointer8++;
+		Filetree[i].Filename[6] = *fspointer8++;
+		Filetree[i].Filename[7] = *fspointer8++;
+		Filetree[i].Extention[0] = *fspointer8++;
+		Filetree[i].Extention[1] = *fspointer8++;
+		Filetree[i].Extention[2] = *fspointer8++;
+		Filetree[i].Attributes = *fspointer8++;
+		Filetree[i].RESERVED = *fspointer8++;
+		Filetree[i].CreateTimeTenth = *fspointer8++;
+		fspointer16 = (volatile uint16_t*) fspointer8;
+		Filetree[i].CreateTime = *fspointer16++;
+		Filetree[i].CreateDate = *fspointer16++;
+		Filetree[i].LastAccDate = *fspointer16++;
+		Filetree[i].StartingCluster = *fspointer16++;
+		Filetree[i].LastWrtTime = *fspointer16++;
+		Filetree[i].LastWrtDate = *fspointer16++;
+		Filetree[i].FirstCluster = *fspointer16++;
+		fspointer32 = (volatile uint32_t*) fspointer16;
+		Filetree[i].Filesize = *fspointer32++;
 
-	kputs(0x2,Filetree[0].Filename[0]);
+		//kputs(0x2,Filetree[i].Filename[0]);
+		//kputs(0x2,Filetree[i].Filename[1]);
+		//kputs(0x2,Filetree[i].Filename[2]);
+		//kputs(0x2,Filetree[i].Filename[3]);
+		//kputs(0x2,Filetree[i].Filename[4]);
+		//kputs(0x2,Filetree[i].Filename[5]);
+		//kputs(0x2,Filetree[i].Filename[6]);
+		//kputs(0x2,Filetree[i].Filename[7]);
+		//kputs(0x2,Filetree[i].Extention[0]);
+		//kputs(0x2,Filetree[i].Extention[1]);
+		//kputs(0x2,Filetree[i].Extention[2]);
+		//kputs(0x2,'\n');
+//		write_serial(Filetree[i].Filename[0]);
+//		write_serial(Filetree[i].Filename[1]);
+//		write_serial(Filetree[i].Filename[2]);
+//		write_serial(Filetree[i].Filename[3]);
+//		write_serial(Filetree[i].Filename[4]);
+//		write_serial(Filetree[i].Filename[5]);
+//		write_serial(Filetree[i].Filename[6]);
+//		write_serial(Filetree[i].Filename[7]);
+//		write_serial(Filetree[i].Extention[0]);
+//		write_serial(Filetree[i].Extention[1]);
+//		write_serial(Filetree[i].Extention[2]);
+//		write_serial('\n');
+	}
 	//}
 
 	return;

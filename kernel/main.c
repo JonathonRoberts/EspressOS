@@ -30,7 +30,7 @@ int main()
 //	skprint("\t\t\tWelcommen to Mein Operating System\n");
 //	skprint("\t\t\t\tEspressOS v0.01\n");
 	while(1){
-//		a = read_serial();
+//		char a = read_serial();
 //		if(a =='q')
 //		{
 //			qemushutdown();
