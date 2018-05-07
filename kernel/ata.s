@@ -1,12 +1,3 @@
-;=============================================================================
-; ATA read sectors (LBA mode)
-;
-; @param EAX Logical Block Address of sector
-; @param CL  Number of sectors to read
-; @param RDI The address of buffer to put data obtained from disk
-;
-; @return None
-;=============================================================================
 global ata_lba_read:
 global ReadPSector:
 ata_lba_read:
@@ -18,10 +9,9 @@ ata_lba_read:
 	push rdx
 	push rdi
 
-	mov rax, 19
-	;mov cl, 14
-	mov cl, 1
-	mov rdi, 0x100000
+	mov rax, 19	; LBA of sector
+	mov cl, 14	; Sectors to Read
+	mov rdi, 0x100000	; buffer location
 
 	mov rbx, rax         ; Save LBA in RBX
 
