@@ -227,7 +227,7 @@ CHS_Read.Retry:
         mov es, ax
         xor bx, bx
 
-        mov al, 60      ; Number of sectors to read
+        mov al, 63      ; Number of sectors to read
         mov ch, 0       ; cylinder
         mov cl, 2       ; sector to start reading at
         mov dh, 0       ; head number
