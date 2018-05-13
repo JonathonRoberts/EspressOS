@@ -1,64 +1,3 @@
-/*
- * The FUGPL License
- * ===================
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software with only one restriction. No part of
- * it may be included in software projects that are solely distributed under
- * strong copyleft restricted licenses.  This license is *NOT* GPL compatible,
- * and that is it's only restriction.
- *
- * There otherwise exists no restrictions in using this software, including
- * without other limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-#ifndef _FAT_H_
-#define _FAT_H_
-
-#ifndef _FAT_H_
-#include "fat.h"
-#endif
-
-
-void init_FAT();
-
-/*
-unsigned int fatnextcluster()
-{
-unsigned char FAT_table[cluster_size];
-unsigned int fat_offset = active_cluster + (active_cluster / 2);// multiply by 1.5
-unsigned int fat_sector = first_fat_sector + (fat_offset / cluster_size);
-unsigned int ent_offset = fat_offset % cluster_size;
-
-//at this point you need to read from sector "fat_sector" on the disk into "FAT_table".
-
-unsigned short table_value = *(unsigned short*)&FAT_table[ent_offset];
-
-if(current_cluster & 0x0001)
-	table_value = table_value >> 4;
-else
-	table_value = table_value & 0x0FFF;
-
-//the variable "table_value" now has the information you need about the next cluster in the chain.
-}
-*/
-
-
 //struct {
 ///* General Volume Boot Record */
 //unsigned short bytes_per_sector;
@@ -106,6 +45,7 @@ else
 ///* At what address does the data region start at? */
 //fat12.data_start_addr = fat12.root_dir_sector*fat12.bytes_per_sector +
 //fat12.max_root_dir_entries*32;
+
 
 typedef struct fat16_vbr
 {
@@ -166,7 +106,8 @@ typedef struct fat16_dir
 
 struct fat16_vbr VBR;
 struct fat16_mbr Partition1;
-struct fat16_dir RootFiletree[512];
+struct fat16_dir RootFiletree[200];
+//struct fat16_dir BootFiletree[30];
 
 void init_FAT()
 {
@@ -237,7 +178,7 @@ volatile uint32_t *fspointer32;
 
 	int i=0;
 	fspointer32 = (volatile uint32_t*) 0x100000;
-	for (i=0;i<812;i++){
+	for (i=0;i<200;i++){
 		fspointer8 = (volatile uint8_t*)fspointer32;
 		RootFiletree[i].Filename[0] = *fspointer8++;
 		RootFiletree[i].Filename[1] = *fspointer8++;
@@ -263,6 +204,15 @@ volatile uint32_t *fspointer32;
 		RootFiletree[i].FirstCluster = *fspointer16++;
 		fspointer32 = (volatile uint32_t*) fspointer16;
 		RootFiletree[i].Filesize = *fspointer32++;
+		if(RootFiletree[i].Filename[0] == 'B')
+		if(RootFiletree[i].Filename[1] == 'O')
+		if(RootFiletree[i].Filename[2] == 'O')
+		if(RootFiletree[i].Filename[3] == 'T')
+		if(RootFiletree[i].Filename[4] == ' ')
+		if(RootFiletree[i].Filename[5] == ' ')
+		if(RootFiletree[i].Filename[6] == ' ')
+		if(RootFiletree[i].Filename[7] == ' ')
+			kputs(0x2, 'Y');
 
 		//kputs(0x2,Filetree[i].Filename[0]);
 		//kputs(0x2,Filetree[i].Filename[1]);
@@ -293,5 +243,4 @@ volatile uint32_t *fspointer32;
 
 	return;
 }
-#endif
 

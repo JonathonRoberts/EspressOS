@@ -52,6 +52,14 @@ static inline uint8_t inb(uint16_t port)
                    : "Nd"(port) );
     return ret;
 }
+static inline uint16_t inw(uint16_t port)
+{
+    uint16_t ret;
+    __asm__ __volatile__ ("inw %1, %0"
+		   : "=a"(ret)
+		   : "Nd"(port));
+    return ret;
+}
 static inline void io_wait(void)
 {
     /* Port 0x80 is used for 'checkpoints' during POST. */

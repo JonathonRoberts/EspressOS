@@ -4,8 +4,8 @@ KERNEL=$(BUILD_DIR)/kernel/kernel.bin
 FLOPPY_IMG=disk.img
 DISK_IMG=disk.iso
 DEBUG_EXIT=-device isa-debug-exit,iobase=0xf4,iosize=0x04
-#QEMU=qemu-system-x86_64 -machine q35 $(DEBUG_EXIT)
-QEMU=qemu-system-x86_64 -machine pc $(DEBUG_EXIT)
+QEMU=qemu-system-x86_64 -machine q35 $(DEBUG_EXIT)
+#QEMU=qemu-system-x86_64 -machine pc $(DEBUG_EXIT)
 
 all: bootdisk cdrom
 
@@ -33,6 +33,7 @@ hd: bootloader kernel
 	dd conv=notrunc if=build/kernel/kernel.bin of=disk.img bs=512 count=`du build/kernel/kernel.bin|cut -f1` seek=1
 	doas mount -t msdos /dev/vnd0c build/tmp
 	doas touch build/tmp/TEST.TXT
+	doas touch build/tmp/BOOT
 	doas umount build/tmp
 	doas vnconfig -u vnd0
 	doas dd conv=notrunc if=disk.img of=/dev/wd0c bs=512 seek=0
