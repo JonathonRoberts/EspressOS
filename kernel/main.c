@@ -22,7 +22,7 @@ int main()
 	//ata_init();
 	kputs(0x2, '1');
 	//ata_lba_read28();
-	ata_lba_read48();
+	ata_lba_read28();
 	kputs(0x2, '2');
 	a = 0x100000;
 		kputs(0x2, '\n');

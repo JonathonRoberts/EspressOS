@@ -22,7 +22,6 @@ check_bsy:
 	test al, 0x80
 	jnz .wait_for_bsy
 .wait_for_drq:
-call sponge
 	in al, dx
 	test al, 0x8
 	jz .wait_for_bsy
