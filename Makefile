@@ -38,10 +38,14 @@ hd: bootloader kernel
 	doas vnconfig -u vnd0
 	doas dd conv=notrunc if=disk.img of=/dev/wd0c bs=512 seek=0
 
+#qemu-gdb:
+#	$(QEMU) -hda $(FLOPPY_IMG) -gdb tcp::26000 -S
+#qemu:
+#	$(QEMU) -hda $(FLOPPY_IMG)
 qemu-gdb:
-	$(QEMU) -hda $(FLOPPY_IMG) -gdb tcp::26000 -S
+	$(QEMU) -drive id=disk,file=$(FLOPPY_IMG),if=none -device ahci,id=ahci -device ide-drive,drive=disk,bus=ahci.0  -gdb tcp::26000 -S
 qemu:
-	$(QEMU) -hda $(FLOPPY_IMG)
+	$(QEMU) -drive id=disk,file=$(FLOPPY_IMG),if=none -device ahci,id=ahci -device ide-drive,drive=disk,bus=ahci.0
 qemuf-gdb:
 	$(QEMU) -fda $(FLOPPY_IMG) -gdb tcp::26000 -S
 qemuf:
